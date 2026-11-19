@@ -135,22 +135,26 @@ panel to a subdomain behind Cloudflare Access, so only you can reach the login p
 2. In Cloudflare **Zero Trust > Access > Applications**, create a **Self-hosted** application for
    `painel.gutolabs.com.br`. Add an **Allow** policy that matches only your e-mail address, using
    one-time PIN or GitHub login. Keep the session short, for example 24 h.
-3. In Easypanel settings, change the panel domain to `painel.gutolabs.com.br` and wait for the
+3. Turn on two-factor authentication for the Easypanel account.
+4. In Easypanel settings, change the panel domain to `painel.gutolabs.com.br` and wait for the
    certificate.
-4. In a private browser window, open `https://painel.gutolabs.com.br`. Confirm that the Access
+5. In a private browser window, open `https://painel.gutolabs.com.br`. Confirm that the Access
    login appears first, and that the panel loads after you log in.
-5. Remove the panel from the root of `gutolabs.com.br`. Then point the root at your tools, or
+6. Remove the panel from the root of `gutolabs.com.br`. Then point the root at your tools, or
    redirect it.
-6. On the VPS firewall, close direct access to the panel port (3000 by default). Allow 80/443
+7. On the VPS firewall, close direct access to the panel port (3000 by default). Allow 80/443
    **only** from the [Cloudflare IP ranges](https://www.cloudflare.com/ips/), and SSH only from
    your IPs. This step is required. Access protects only traffic that passes through Cloudflare;
    if 80/443 stay open to the world, anyone can reach the panel hostname on the VPS IP directly.
    As an alternative, use a Cloudflare Tunnel and close 80/443 entirely.
-7. From a machine outside Cloudflare, confirm that both direct paths fail (time out or are
+   Docker-published ports bypass UFW and the iptables INPUT chain, so enforce the rule in the
+   provider firewall (Contabo) or in the `DOCKER-USER` chain, not with UFW alone. Block port 3000
+   in the same place.
+8. From a machine outside Cloudflare, confirm that both direct paths fail (time out or are
    refused):
    - `curl -m 10 http://<vps-ip>:3000`
    - `curl -m 10 -k --resolve painel.gutolabs.com.br:443:<vps-ip> https://painel.gutolabs.com.br`
-8. Keep the Cloudflare IP list current; Cloudflare publishes changes at the same URL.
+9. Keep the Cloudflare IP list current; Cloudflare publishes changes at the same URL.
 
 ## Security
 
