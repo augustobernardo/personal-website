@@ -1,6 +1,11 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { Download, Mail } from "lucide-react";
 import type { ReactNode } from "react";
 import { profile } from "@/content/profile";
+
+// Evaluated at build time (static export): the button appears once the PDF exists in public/.
+const hasResume = existsSync(join(process.cwd(), "public", profile.resumePath));
 
 const BUTTON =
   "inline-flex min-h-11 items-center gap-2 rounded-md border border-line px-4 py-2 text-sm font-medium hover:bg-surface";
@@ -37,14 +42,16 @@ export function Hero() {
       <p className="mt-3 text-lg text-muted">{profile.title}</p>
       <p className="mt-6 max-w-2xl text-xl">{profile.tagline}</p>
       <div className="mt-8 flex flex-wrap gap-3">
-        <a
-          href={profile.resumePath}
-          download
-          className="inline-flex min-h-11 items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:opacity-90"
-        >
-          <Download aria-hidden="true" className="size-4" />
-          Baixar currículo
-        </a>
+        {hasResume && (
+          <a
+            href={profile.resumePath}
+            download
+            className="inline-flex min-h-11 items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:opacity-90"
+          >
+            <Download aria-hidden="true" className="size-4" />
+            Baixar currículo
+          </a>
+        )}
         <External href={profile.github} icon={<BrandIcon path={GITHUB_PATH} />}>
           GitHub
         </External>

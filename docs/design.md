@@ -57,8 +57,8 @@ the 3:1 non-text contrast.
 
 - A project without `image` shows `public/projects/placeholder.svg`.
 - A project without technical decisions hides the `<details>` block.
-- The résumé button links to `/curriculo-augusto-bernardo.pdf`, which returns 404 until the PDF is
-  added.
+- The résumé button renders only when `public/curriculo-augusto-bernardo.pdf` exists at build
+  time, so the site never links to a missing file.
 
 ## Breakpoints
 
