@@ -34,7 +34,7 @@ export type Project = {
   repoUrl?: string;
   liveUrl?: string;
   corporate?: boolean;
-  /** Technical decisions. An empty list renders a visible TODO. */
+  /** Technical decisions. An empty list hides the "Decisões técnicas" block. */
   decisions: string[];
   /** Only published projects are rendered. */
   published: boolean;
