@@ -182,26 +182,66 @@ outline.
 
 ## Motion
 
-Only `translate`, `scale`, `rotate` and `opacity` animate, plus the button shadow. Section entrances
-are CSS scroll-driven animations (`animation-timeline: view()`), so they need no script. Browsers
-without support, and `prefers-reduced-motion: reduce`, show the content static. Tilts are static
-`rotate` values, never part of a keyframe, so reduced motion keeps them.
+Two engines with separate jobs. CSS owns every state change (buttons, the live sticker, panel rows)
+and the one hero entrance, so feedback never waits for a library. GSAP 3.15.1 with ScrollTrigger owns
+the scroll choreography: one-shot, time-based reveals that work in every browser. The previous CSS
+scroll-driven entrances (`animation-timeline: view()`) were scrubbed, so a slap followed scroll speed
+and replayed backwards; they are removed, and their classes stay in the markup as GSAP hooks.
 
-| Element                                     | Motion                                                    | Timing                               | Reduced motion      |
-| ------------------------------------------- | --------------------------------------------------------- | ------------------------------------ | ------------------- |
-| Button hover (pointer only)                 | Rise 2 px, shadow 4 → 6 px                                | 140 ms `--ease-out`                  | None                |
-| Button press                                | Sink 4 px into the shadow, shadow → 0                     | 90 ms `--ease-out`                   | Shadow → 0, no move |
-| Live sticker when a header check lands      | Slap: fade in from scale 1.25, squash 1.04 × 0.96, settle | 420 ms `--ease-out`, per real result | None                |
-| Status and fact stickers entering view      | Same slap                                                 | Scroll, `entry 20%`–`60%`            | None                |
-| Section `h2`                                | Rise 1.5 rem                                              | Scroll, `entry 0%`–`50%`             | None                |
-| Fragment, security panel                    | Settle from scale 0.97                                    | Scroll, `entry 10%`–`55%`            | None                |
-| Card text, role and stack cards, chat, flow | Rise 1.5 rem, staggered by `--i` (max 6)                  | Scroll, `entry 15%`–`55%`, +6 %/item | None                |
-| Security panel rows when a result arrives   | Fade, 0.25 rem slide, mark from scale 0.6                 | 240 ms `--ease-out`, 30 ms stagger   | None                |
-| Recheck icon while loading                  | Spin                                                      | 1 s linear, only while loading       | None                |
-| Anchor scrolling                            | `scroll-behavior: smooth`                                 | Browser                              | `auto`              |
+Loading. `MotionBoot` (a client component that renders nothing, mounted once in `page.tsx`) imports
+the GSAP director after the `load` event and the next idle period. GSAP is never in the hydration
+bundle, never on the LCP path, and never downloaded when `prefers-reduced-motion: reduce` matches at
+start-up. All GSAP work runs inside one `gsap.matchMedia()` and is reverted on unmount or when the
+reader switches to reduced motion. Budget: async chunk ≤ 55 KB gzip (about 48 KB estimated from the
+package files), initial JavaScript + ≤ 2 KB, Lighthouse Performance ≥ 95.
 
-The hero (name, role sticker, chips, tagline, facts, About) never animates, so the LCP is not
-delayed. No loops, no autoplay.
+Rules:
+
+- Only `opacity` and transforms (`translate`, `scale`, `rotate`) animate, plus the button shadow and
+  the live sticker's lift shadow.
+- The exported HTML never holds a hidden state; without JavaScript everything is visible. GSAP hides
+  only elements whose top is below 88 % of the viewport when it starts, and reveals each once when it
+  reaches that line. Anything already on screen never animates. Focus or print reveals pending
+  elements at once; fades use `opacity`, never `visibility`, so links stay in the Tab order.
+- Every reveal clears its inline styles when it ends, so tilts (`rotate`) and button hover and press
+  come back from their classes.
+- The `h1`, chips, tagline, actions, facts and About never animate, so the LCP is never delayed.
+- Tilts are static `rotate` values, never part of a keyframe, so reduced motion keeps them.
+- No loops, no autoplay beyond one-shot entrances, no count-up numbers (counting from 0 would briefly
+  claim "0 de 6 cabeçalhos ativos"), no 3D, nothing on the header, nav or theme toggle (used most).
+- Staggers are capped so a group starts within 360 ms (480 ms for chat bubbles).
+
+Slap: the sticker falls onto the paper from scale 1.25 (1.08 for elements wider than 240 px),
+accelerating into the impact (`--ease-in`), fades in during the first 20 %, squashes to 1.04 × 0.96 at
+55 % and settles with `--ease-out`; 420 ms in total (`--dur-slap`). GSAP eases: `power3.out` ≈
+`--ease-out`, `power2.in` ≈ `--ease-in`.
+
+| Element                                                           | Motion                                                 | Timing                                           | Trigger                 | Engine |
+| ----------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------ | ----------------------- | ------ |
+| Button hover (pointer only)                                       | Rise 2 px, shadow 4 → 6 px                             | 140 ms `--ease-out`                              | Hover                   | CSS    |
+| Button press                                                      | Sink 4 px into the shadow, shadow → 0                  | 90 ms `--ease-out`                               | Press                   | CSS    |
+| Hero role sticker (`.hero-slap`)                                  | Slap                                                   | 420 ms                                           | Page load               | CSS    |
+| Live sticker while checking                                       | Lift 3 px, shadow 8 → 11 px                            | 140 ms `--ease-out`                              | `data-state="loading"`  | CSS    |
+| Live sticker when the result lands                                | The new sticker slaps; shield icon pops from scale 0.6 | 420 ms; icon 240 ms after a 260 ms delay         | Each real result        | CSS    |
+| Security panel rows when a result arrives                         | Fade, 0.25 rem slide, mark from scale 0.6              | 240 ms `--ease-out`, 30 ms stagger               | Each real result        | CSS    |
+| Recheck icon while loading                                        | Spin                                                   | 1 s linear, only while loading                   | Loading                 | CSS    |
+| Section `h2`, footer name (`.in-word`)                            | Rise 24 px with fade                                   | 450 ms `power3.out`, 60 ms batch stagger         | Top at 88 %, once       | GSAP   |
+| Card text, role and stack cards, flow, arc, links (`.in-seq > *`) | Rise 24 px with fade                                   | 400 ms `power3.out`, 60 ms stagger (cap 360 ms)  | Top at 88 %, once       | GSAP   |
+| Chat bubbles                                                      | Slide 16 px from their own side with fade              | 350 ms `power3.out`, 120 ms stagger (cap 480 ms) | Top at 88 %, once       | GSAP   |
+| Fragment, security panel (`.in-media`)                            | Settle from scale 0.97 with fade                       | 500 ms `power2.out`                              | Top at 88 %, once       | GSAP   |
+| Status and fact stickers, contact e-mail (`.in-slap`)             | Slap                                                   | 420 ms, 100 ms delay + 90 ms per sticker         | Top at 88 %, once       | GSAP   |
+| Hero live-sticker wrapper (`data-parallax="hero"`)                | Drifts up 40 px                                        | Scrubbed, `scrub: 0.5`                           | Scroll, from 0          | GSAP   |
+| Security fact stickers (`data-parallax="float"`)                  | Float 20 → −20 px                                      | Scrubbed, `scrub: 0.5`                           | Scroll through the band | GSAP   |
+| Anchor scrolling                                                  | `scroll-behavior: smooth`                              | Browser                                          | Anchor link             | CSS    |
+
+Parallax runs only from 1024 px with a fine pointer. With `prefers-reduced-motion: reduce` nothing in
+the table moves: GSAP is not loaded, the slaps and lift are off, colours still change and anchor
+scrolling is `auto`.
+
+Not used, on purpose: three.js (about 129 KB gzip for a lit 3D object that contradicts the flat,
+hard-shadow language and would compete with the name for the reader's attention), Motion (a second
+engine), `@gsap/react` (`useGSAP` needs GSAP in the hydration bundle; `matchMedia().revert()` in a
+`useEffect` cleans up the same way) and GSAP plugins beyond ScrollTrigger.
 
 ## Accessibility
 
