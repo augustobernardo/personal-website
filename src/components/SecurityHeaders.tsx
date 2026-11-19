@@ -130,10 +130,19 @@ function HeaderLine({
     value === null &&
     !hsts &&
     !(current.local && current.report.present === 0);
-  const fill = value !== null ? "bg-ok" : missing ? "bg-bad" : "bg-white";
-  const Mark = value !== null ? Check : missing ? X : Minus;
-  const label =
-    value !== null ? security.row.active : missing ? security.row.missing : security.row.unchecked;
+  const secure =
+    current.status === "done" &&
+    (hsts ? current.report.hsts.secure : (current.report.rows[index]?.secure ?? false));
+  const bad = missing || (value !== null && !secure);
+  const fill = secure ? "bg-ok" : bad ? "bg-bad" : "bg-white";
+  const Mark = secure ? Check : bad ? X : Minus;
+  const label = secure
+    ? security.row.active
+    : value !== null
+      ? security.row.insecure
+      : missing
+        ? security.row.missing
+        : security.row.unchecked;
 
   return (
     <div

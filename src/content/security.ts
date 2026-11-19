@@ -25,7 +25,7 @@ export const security = {
     error: "Não deu para conferir os cabeçalhos",
   },
   button: { check: "Conferir de novo", loading: "Conferindo…" },
-  row: { active: "ativo", missing: "ausente", unchecked: "não conferido" },
+  row: { active: "ativo", missing: "ausente", insecure: "inseguro", unchecked: "não conferido" },
   summary: {
     scripts: (hashes: number) => `script-src 'self' + ${hashes} hashes sha256`,
     safeScripts: ", sem 'unsafe-inline'",
