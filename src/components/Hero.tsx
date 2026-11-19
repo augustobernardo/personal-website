@@ -6,8 +6,8 @@ import { hasResume } from "@/lib/resume";
 import { Section } from "./Section";
 import { SecurityStamp } from "./SecurityHeaders";
 
-const SECONDARY =
-  "inline-flex min-h-11 items-center gap-2 bg-surface-2 px-4 text-[length:var(--step-small)] font-semibold text-fg transition-colors duration-[var(--dur-fast)] hover:bg-surface-3 active:scale-[0.97]";
+const SECONDARY = "nb-btn nb-btn--secondary";
+const PRIMARY = "nb-btn nb-btn--primary";
 
 function BrandIcon({ path }: { path: string }) {
   return (
@@ -34,61 +34,66 @@ function External({ href, icon, children }: { href: string; icon: ReactNode; chi
 
 export function Hero() {
   const words = profile.name.split(" ");
-  const line1 = words.slice(0, 2).join(" ");
-  const line2 = words.slice(2).join(" ");
 
   return (
-    <div className="mt-4 px-3 md:px-[var(--margin)] lg:mt-10 lg:grid lg:grid-cols-12 lg:gap-x-6">
-      <div className="bg-surface px-5 pb-6 pt-5 md:p-10 lg:col-span-8 lg:col-start-3 lg:p-14">
-        <h1
-          id="hero-titulo"
-          className="text-[length:var(--step-display)] font-extrabold leading-[0.92] tracking-[-0.05em]"
-        >
-          <span className="block">{line1}</span>
-          <span className="block">{line2}</span>
-        </h1>
-        <div className="mt-10 grid gap-6 md:grid-cols-[minmax(0,1fr)_17rem] md:items-start md:gap-8">
-          <div>
-            <p className="text-[length:var(--step-lead)] font-semibold">{profile.role}</p>
-            <p className="text-[length:var(--step-lead)] text-muted">{profile.specialty}</p>
-            <p className="mt-4 max-w-[44ch] text-[length:var(--step-body)]">{profile.tagline}</p>
+    <div className="mx-auto w-full max-w-7xl px-[var(--margin)] pt-8 pb-16 lg:pt-12 lg:pb-24">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-12">
+        <div className="nb-card p-5 sm:p-8 md:col-span-2 lg:col-span-8 lg:row-span-2 lg:p-12">
+          <p className="nb-sticker inline-block rotate-[-2deg] bg-pop-yellow">{profile.role}</p>
+          <h1 id="hero-titulo" className="type-display mt-5">
+            <span className="block">{words[0]}</span>
+            <span className="block">{words[1]}</span>
+            <span className="block">{words.slice(2).join(" ")}</span>
+          </h1>
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {profile.specialty.split(" · ").map((item) => (
+              <li key={item} className="nb-chip">
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 max-w-[34ch] text-[length:var(--step-lead)] font-medium">
+            {profile.tagline}
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a href={`mailto:${profile.email}`} className={PRIMARY}>
+              <Mail aria-hidden="true" strokeWidth={2.5} className="size-4" />
+              {site.links.email}
+            </a>
+            <External href={profile.github} icon={<BrandIcon path={GITHUB_PATH} />}>
+              {site.links.github}
+            </External>
+            <External href={profile.linkedin} icon={<BrandIcon path={LINKEDIN_PATH} />}>
+              {site.links.linkedin}
+            </External>
+            {hasResume && (
+              <a href={profile.resumePath} download className={SECONDARY}>
+                <Download aria-hidden="true" strokeWidth={2.5} className="size-4" />
+                {site.links.resume}
+              </a>
+            )}
           </div>
-          {/* SecurityStamp slot: a separate worker owns the live header-check integration. */}
+        </div>
+        <div className="flex items-start justify-center px-2 pt-2 md:justify-start lg:col-span-4 lg:col-start-9 lg:row-start-1">
           <SecurityStamp />
         </div>
-        <dl className="mt-12 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
-          {profile.facts.map(({ label, value }) => (
-            <div key={label}>
-              <dt className="text-[length:var(--step-small)] font-semibold text-muted">{label}</dt>
-              <dd className="mt-1 text-[length:var(--step-body)] font-semibold text-fg">{value}</dd>
-            </div>
-          ))}
-        </dl>
-        <div className="mt-10 flex flex-wrap gap-2">
-          <a href={`mailto:${profile.email}`} className={SECONDARY}>
-            <Mail aria-hidden="true" className="size-4" />
-            {site.links.email}
-          </a>
-          <External href={profile.github} icon={<BrandIcon path={GITHUB_PATH} />}>
-            {site.links.github}
-          </External>
-          <External href={profile.linkedin} icon={<BrandIcon path={LINKEDIN_PATH} />}>
-            {site.links.linkedin}
-          </External>
-          {hasResume && (
-            <a href={profile.resumePath} download className={SECONDARY}>
-              <Download aria-hidden="true" className="size-4" />
-              {site.links.resume}
-            </a>
-          )}
+        <div className="nb-card p-5 sm:p-6 lg:col-span-4 lg:col-start-9 lg:row-start-2">
+          <dl className="divide-y-2 divide-line">
+            {profile.facts.map(({ label, value }) => (
+              <div key={label} className="grid gap-1 py-3 first:pt-0 last:pb-0">
+                <dt className="font-mono text-[0.875rem] font-bold text-muted">{label}</dt>
+                <dd className="font-bold">{value}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
         <Section
           id="sobre"
           title={site.about.title}
-          className="mt-16"
-          titleClassName="text-[length:var(--step-lead)] font-extrabold"
+          className="nb-card on-fill bg-pop-blue p-5 sm:p-8 md:col-span-2 lg:col-span-12 lg:grid lg:grid-cols-12 lg:gap-6 lg:p-10"
+          titleClassName="type-title lg:col-span-3"
         >
-          <p className="mt-3 max-w-[65ch] text-[length:var(--step-body)]">{profile.about}</p>
+          <p className="mt-3 max-w-[65ch] lg:col-span-9 lg:mt-0">{profile.about}</p>
         </Section>
       </div>
     </div>

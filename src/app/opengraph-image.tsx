@@ -17,12 +17,24 @@ export default function Image() {
         flexDirection: "column",
         justifyContent: "center",
         padding: 80,
-        background: "#0f1115",
-        color: "#f4f4f5",
+        position: "relative",
+        background: "#FFF4DE",
+        color: "#111111",
       }}
     >
-      <div style={{ fontSize: 72, fontWeight: 700 }}>{profile.name}</div>
-      <div style={{ fontSize: 36, marginTop: 32, color: "#a1a1aa" }}>{profile.title}</div>
+      <div style={{ fontSize: 72, fontWeight: 800 }}>{profile.name}</div>
+      <div style={{ fontSize: 36, marginTop: 32, color: "#4D4A44" }}>{profile.title}</div>
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 24,
+          background: "#FFD23F",
+          border: "4px solid #111111",
+        }}
+      />
     </div>,
     size,
   );
