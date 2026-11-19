@@ -1,0 +1,104 @@
+# Setup and evidence
+
+## Source and context
+
+- Date: 2026-11-19.
+- Toolkit: `https://github.com/soumatheusgomes/vibe-coding-toolkit`, revision
+  `7ef68dd7b00ddfc5cd464458855e4ab66dd2128f`, prompt `docs/prompts/11-next-project-bootstrap.md`.
+  It was cloned to a temporary directory outside the repository and was not copied in.
+- Product description: the owner's portfolio brief, summarized in `PRODUCT.md`.
+- Client: Claude Code on WSL2 (Linux 6.18), main model Opus 5.5. Implementation subagents ran on
+  Sonnet; planning, integration and review ran on Opus. Codex review used the Jev-routed model.
+- Runtime: Node 24.22.1 through nvm (machine default is 26; the project pins 24), pnpm 12.18.0,
+  Docker 29.9.3.
+
+## Decisions and sources
+
+| Decision                                                             | Source                                                                                          | Notes                                                                                                                                                                                                                                                                         |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `create-next-app@16.4.6` (npm `latest`; `preview`/`canary` not used) | `npm view next dist-tags`                                                                       | Flags: `--typescript --tailwind --eslint --app --src-dir --import-alias '@/*' --use-pnpm --disable-git --no-react-compiler --no-cache-components --no-agent-feedback`. Scaffolded in a temporary directory and merged, because the repository already had a README and `.git` |
+| `output: "export"`, `images.unoptimized`                             | `node_modules/next/dist/docs/01-app/02-guides/static-exports.md`                                | Unsupported features (headers, proxy, image optimizer) avoided                                                                                                                                                                                                                |
+| `dynamic = "force-static"` on sitemap, robots, opengraph-image       | same guide, Route Handlers section                                                              | Required for route handlers under export                                                                                                                                                                                                                                      |
+| CSP by inline-script hashes                                          | `content-security-policy.md` (nonces require dynamic rendering; SRI covers only external files) | Implemented in `scripts/csp-hashes.mjs`                                                                                                                                                                                                                                       |
+| No persistence or server core                                        | Toolkit `docs/06-project-defaults.md` allows omission with a reason                             | Reason in `docs/architecture.md`                                                                                                                                                                                                                                              |
+| `@types/node@^24`                                                    | Matches the Node 24 runtime                                                                     | Scaffold default was `^20`                                                                                                                                                                                                                                                    |
+| Lightweight ESLint profile and focused typed profile                 | Toolkit `templates/eslint/`                                                                     | Drizzle and data-boundary guards omitted (no database)                                                                                                                                                                                                                        |
+| Context7 not configured                                              | Disabled by the owner on this machine                                                           | Next.js docs bundled in `node_modules/next/dist/docs/` used instead                                                                                                                                                                                                           |
+
+## Components
+
+| Component                                                                                                                      | Action and reason                        | Scope                                         | State and evidence                                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Next.js 16.4.6, React 19.3.0, Tailwind 4.3.3, TypeScript 5.9.3                                                                 | Installed by scaffold                    | project                                       | build passes                                                                                                                                   |
+| lucide-react 1.75.0                                                                                                            | Requested icons                          | project                                       | in use (Download, Mail, Sun, Moon); GitHub/LinkedIn marks are inline SVG because this version does not export them                             |
+| prettier 3.10.1, vitest 5.1.1, @types/node 24.19.2                                                                             | Formatting, unit tests, runtime types    | project (dev)                                 | `pnpm test` 8/8                                                                                                                                |
+| `vercel-react-best-practices`, `vercel-composition-patterns`, `writing-guidelines`                                             | Applicable web skills                    | project, `--copy`, agents claude-code + codex | `skills@1.9.0`, vercel-labs/agent-skills `1a2c79d`; discovered by Claude Code in this session                                                  |
+| `next-dev-loop`, `next-bundle-optimizer`                                                                                       | Next.js runtime and bundle workflows     | project, `--copy`                             | vercel/next.js canary `a6079ff`; discovered by Claude Code in this session                                                                     |
+| `web-design-guidelines`, `find-skills`                                                                                         | Already global                           | user                                          | not duplicated locally                                                                                                                         |
+| `vercel-optimize`, `deploy-to-vercel`, `vercel-cli-with-tokens`, `vercel-react-view-transitions`, `vercel-react-native-skills` | Not installed                            | —                                             | Hosting is Easypanel, not Vercel; no view transitions requested; not mobile                                                                    |
+| PostgreSQL skills, shadcn, Sentry MCP, `gh-fix-ci`, `differential-review`                                                      | Not installed                            | —                                             | No database, no UI kit, no Sentry service, no Codex CI-repair workflow; security review covered by `portfolio-security` and the toolkit prompt |
+| Third-party skills found with `skills find` (`addyosmani/web-quality-skills@accessibility`, `cloudflare/skills@web-perf`)      | Recommended only                         | —                                             | Owner rule: third-party skills need explicit approval per skill                                                                                |
+| Project subagents (7) in `.claude/agents/`                                                                                     | Adapted from the owner's vault templates | project                                       | Files present; they load in a new session. Vault pointer notes in `agents_projects/portfolio/`                                                 |
+| Ponytail, Caveman, Superpowers, RTK                                                                                            | Reused                                   | user plugins/hooks                            | active in this session (hook output observed)                                                                                                  |
+| Graphify                                                                                                                       | Code graph without LLM                   | project output, ignored                       | `graphify update .`: 293 nodes, 406 edges, 17 communities                                                                                      |
+| Codex plugin 1.0.6                                                                                                             | Code reviewer                            | user                                          | review ran, see Checks                                                                                                                         |
+| Jev (model router)                                                                                                             | Model choice for Codex                   | user                                          | worked with the key file; the key exported in `~/.bashrc` returned HTTP 401                                                                    |
+
+## Documentation created
+
+`PRODUCT.md`, `README.md` (replaced the one-line GitHub stub), `AGENTS.md` (project instructions
+plus the preserved Next.js block), `CLAUDE.md` (`@AGENTS.md`), and `docs/architecture.md`,
+`design.md`, `onboarding.md`, `quality.md`, `setup.md`. No earlier `product.md` existed.
+
+## Checks
+
+| Item                                                          | State                                                                       | Evidence                                                                                                                                                               |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm install --frozen-lockfile`                              | validated                                                                   | exit 0                                                                                                                                                                 |
+| `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm lint:rules` | validated                                                                   | 0 issues; 8/8 tests; 3 rule suites ok                                                                                                                                  |
+| `pnpm lint:typed`                                             | validated                                                                   | exit 0; about 141 s and 540 MB peak on `/mnt/c`                                                                                                                        |
+| `pnpm build`                                                  | validated                                                                   | routes `/`, `/_not-found`, `/icon.svg`, `/opengraph-image`, `/robots.txt`, `/sitemap.xml` all static                                                                   |
+| Prettier                                                      | validated                                                                   | all files formatted (`eslint-rules/` excluded to keep upstream copies)                                                                                                 |
+| `pnpm audit --prod --audit-level high`                        | validated                                                                   | no known vulnerabilities                                                                                                                                               |
+| CSP self-test                                                 | validated                                                                   | `node scripts/csp-hashes.mjs --self-test` ok                                                                                                                           |
+| Lighthouse CI (`@lhci/cli@0.16.1`, 3 runs, `index.html`)      | validated                                                                   | Performance 97–99, Accessibility 100, Best Practices 100, SEO 100                                                                                                      |
+| Docker build and run                                          | validated                                                                   | 5 hashes from 3 HTML files; 200 with all headers; `/opengraph-image` `image/png`; 404 page; gzip; uid 101; image 91.6 MB                                               |
+| Browser (agent-browser, Chrome 155)                           | validated                                                                   | no overflow at 320–1440 px; axe 0 violations light and dark; skip link; theme toggle persists; `<details>` by keyboard; reduced motion; no CSP errors on the container |
+| actionlint, YAML parse                                        | validated                                                                   | no errors                                                                                                                                                              |
+| Trivy, gitleaks, CodeQL                                       | configured, not run locally                                                 | Trivy is not installed here; they run in CI after the first push                                                                                                       |
+| Codex adversarial review                                      | ran                                                                         | 1 high finding (origin bypass of Cloudflare Access in the panel runbook), fixed in `README.md`                                                                         |
+| Security audit                                                | see `.claude/referencias/fragilidades-conhecidas.md` and the session report | —                                                                                                                                                                      |
+
+Temporary resources created and removed: scaffold and toolkit clone in the session scratchpad,
+containers `pw-test`/`pw-local`, a local `python3 -m http.server` on port 3100, the agent-browser
+session, and Lighthouse profile folders created inside the repository by WSL.
+
+## Memory and harness evidence
+
+- Memory: canonical knowledge lives in the versioned docs listed above, loaded through
+  `CLAUDE.md` → `AGENTS.md`. Durable decisions go in `docs/architecture.md`; evidence goes here.
+  Re-verify a claim against the code when a dependency, `nginx.conf` or the Dockerfile changes.
+- Clean-context retrieval: shown by the implementation subagents. Each started without this
+  conversation and found the rules from `AGENTS.md` and the files it points to.
+- Harness case "Boundary fix" (toolkit `docs/07-harness-evaluation.md`), on a disposable fixture
+  copy. Evaluator `scripts/validate-harness.mjs` (sha256 prefix `14220a75`). The baseline failed the
+  cross-tenant and invalid-identity checks as expected. A Sonnet subagent fixed only `access.mjs`,
+  and the coordinator's rerun passed 7/7. Notes and instructions were preserved.
+- Harness case "Worker/resource conflict": observed during setup. Four parallel workers shared one
+  checkout, so the coordinator gave each one disjoint files. Builds were limited to one worker, and
+  the Docker worker built from a clean clone. No conflicting writes occurred.
+- Not run: stale handoff, read-only security review on the fixture, reapply setup, partial blocker,
+  stop and resume.
+- Harness2 official CLI lab: not used (needs cost and isolation authorization).
+
+## Pending work and next delivery
+
+- Owner content: résumé PDF, project images, technical decisions for Superheros API and Romanos
+  Oito, and client authorization for the Romanos Oito card (`TODO(augusto)` in
+  `src/content/*.ts`).
+- Owner infrastructure: Easypanel app, Cloudflare DNS, SSL and redirect, the panel move with
+  Cloudflare Access, origin firewall restricted to Cloudflare, and GitHub private vulnerability
+  reporting enabled in the repository settings.
+- First push: confirm `gh pr checks` (or the push run) is green, including Trivy, gitleaks and
+  CodeQL.
+- Next MVP task: add the résumé and project images, then deploy to Easypanel.
