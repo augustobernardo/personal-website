@@ -76,9 +76,15 @@ References de stack: as de Next.js/React, nginx e GitHub Actions em `~/.claude/s
 <!-- CUSTOM:INÍCIO -->
 | Componente@versão | CVE/aviso | Severidade | Corrigido em | Se aplica aqui? | Fonte |
 |---|---|---|---|---|---|
-| dependências de produção | `pnpm audit --prod`: nenhuma vulnerabilidade conhecida | — | — | — | execução local em 2026-11-19 |
+| dependências de produção | `pnpm audit --prod`: nenhuma vulnerabilidade conhecida | — | — | — | execução local |
+| next@16.4.6 | avisos de 2026-10-14 e 2026-11-03 | crítico a médio | 16.4.1 e 16.4.5 | não — versão em uso já corrigida; quase todos são de runtime de servidor | GitHub Advisories vercel/next.js |
+| react@19.3.0 | GHSA-xqc2-xf4c-x3h3 (CVE-2026-126187), GHSA-h3gv-c5rc-p453 | crítico, alto | 19.3.1 | não — afetam só `react-server-dom-*`, ausente no lockfile; sem servidor RSC | GitHub Advisories facebook/react |
+| nginx@1.30.6 | 9 CVEs corrigidos em 1.30.7 (2026-11-18) | até major | 1.30.7 | não alcançável: sem TLS, http2/3, resolver, alias, mail, stream; subir quando a imagem unprivileged sair | nginx.org/en/security_advisories.html |
+| node@24.22.3 (build) | nenhum | — | — | — | nodejs.org/dist/index.json |
+| aquasecurity/trivy-action@v0.36.0 | GHSA-69fq-xp46-6x23, GHSA-9p44-j4g5-cfx5 | crítico, médio | <0.35.0 / 0.31–0.34 | não — versão fora das faixas | GitHub Advisories |
+| demais actions fixadas | nenhum aberto; SHA confere com a tag | — | — | — | `gh api` |
 
-Pesquisado em: 2026-11-19 (só `pnpm audit`). A pesquisa de CVE/EOL de next, react e nginx fica para a primeira auditoria deste agente, que deve atualizar esta tabela.
+Pesquisado em: 2026-11-19 (primeira auditoria, via security-auditor seguindo este arquivo).
 <!-- CUSTOM:FIM -->
 
 ## Ameaças prioritárias para este tipo de sistema

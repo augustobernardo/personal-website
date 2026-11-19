@@ -11,7 +11,7 @@
 | Lint rule self-check                                                      | `pnpm lint:rules`                                 | local, CI               |
 | Build                                                                     | `pnpm build`                                      | local, CI               |
 | CSP script self-test                                                      | `node scripts/csp-hashes.mjs --self-test`         | local                   |
-| Lighthouse ≥ 0.9 per category on `index.html`                             | `pnpm dlx @lhci/cli@0.16.1 autorun`               | local, CI               |
+| Lighthouse ≥ 0.9 per category on `index.html`                             | `pnpm exec lhci autorun`                          | local, CI               |
 | Production dependency audit                                               | `pnpm audit --prod --audit-level high`            | local, CI               |
 | Secrets over full history                                                 | gitleaks                                          | CI; locally before push |
 | Image scan (fixable CRITICAL fails)                                       | Trivy                                             | CI                      |
