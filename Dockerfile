@@ -11,8 +11,12 @@ RUN pnpm build
 # Nonces are impossible on a static host, so allow inline scripts by hash.
 RUN node scripts/csp-hashes.mjs out /tmp/csp.conf
 
-# nginx-unprivileged 1.30.6 (stable), runs as uid 101 on 8080
-FROM nginxinc/nginx-unprivileged:1.30.6-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03
+# Official nginx 1.30.7 (resolved 2026-11-19): fixes CRITICAL CVEs in 1.30.6 before the
+# unprivileged variant shipped. Made non-root here; config stays root-owned and read-only.
+FROM nginx:1.30.7-alpine@sha256:bef154735288bc38d99fac41ae63730684bcc661503673a04a0f9bc526ba8598
+RUN sed -i '/^user /d; s,^pid .*,pid /tmp/nginx.pid;,' /etc/nginx/nginx.conf \
+ && sed -i '/^http {/a\    client_body_temp_path /tmp/client_temp;\n    proxy_temp_path /tmp/proxy_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;' /etc/nginx/nginx.conf \
+ && chown -R 101:101 /var/cache/nginx
 COPY --from=build /app/out /usr/share/nginx/html
 COPY --from=build /tmp/csp.conf /etc/nginx/csp.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
