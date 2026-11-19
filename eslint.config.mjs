@@ -1,18 +1,14 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+// Lightweight toolkit profile: static site without persistence or server logger,
+// so the Drizzle and data-boundary guards are intentionally omitted.
+import { defineConfig } from "eslint/config";
+import base from "./eslint-rules/next-base.mjs";
 
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-  ]),
+export default defineConfig([
+  ...base,
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "quality/no-direct-console": ["error", { logger: "nothing (remove client debug output)" }],
+    },
+  },
 ]);
-
-export default eslintConfig;

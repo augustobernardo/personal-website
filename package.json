@@ -6,10 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "pnpm dlx serve@14.2.5 out",
-    "lint": "eslint",
+    "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "lint:typed": "eslint . --config eslint.typed.config.mjs",
+    "lint:rules": "node scripts/verify-quality-rules.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.75.0",
