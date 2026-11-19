@@ -13,6 +13,19 @@ describe("content", () => {
     expect(new Set(slugs).size).toBe(slugs.length);
   });
 
+  it("backs classifier visual stats with the project's technical decisions", () => {
+    const classifier = projects.find((project) => project.slug === "classificador-vistoria");
+    expect(classifier?.visual?.kind).toBe("verdicts");
+    if (classifier?.visual?.kind !== "verdicts") return;
+
+    expect(classifier.visual.stats.length).toBeGreaterThan(0);
+    for (const { value } of classifier.visual.stats) {
+      expect(
+        classifier.decisions.some((decision) => decision.includes(value.replaceAll("~", ""))),
+      ).toBe(true);
+    }
+  });
+
   it("links public projects to code and marks the rest as corporate", () => {
     for (const project of projects) {
       expect(Boolean(project.repoUrl) !== Boolean(project.corporate)).toBe(true);
