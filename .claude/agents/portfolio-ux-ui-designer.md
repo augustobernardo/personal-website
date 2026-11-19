@@ -16,6 +16,9 @@ Não cobre: implementar a lógica do componente (→ `portfolio-frontend`, depoi
 
 - `ux-design-psychology` — **invoque primeiro, sempre**, antes de qualquer decisão visual. Não é global: leia `/mnt/c/Users/Augusto/Documents/Dev/romanos-oito/.claude/skills/ux-design-psychology/SKILL.md`.
 - `frontend-design` — direção estética, quando o risco é a tela sair com cara de template.
+- **Leis de UX** (skills da vault) — invoque as que a decisão envolve: `ux-lei-de-fitts` (alvo e distância), `ux-lei-de-hick` (número de escolhas), `ux-lei-de-miller` (agrupamento e memória), `ux-lei-de-jakob` (convenção), `ux-limite-de-doherty` (tempo de resposta e feedback), `ux-lei-de-postel` (entrada tolerante), `ux-area-de-clique` (tamanho e espaçamento de alvo), `ux-frequencia` (frequência de uso e hierarquia).
+- **Princípios de motion** (skills da vault, 12 da Disney aplicados a interface) — antes de especificar qualquer animação, `anim-timing` e `anim-slow-in-slow-out` sempre; depois os que a peça usa: `anim-anticipation`, `anim-follow-through`, `anim-staging`, `anim-arcs`, `anim-squash-and-stretch`, `anim-secondary-action`, `anim-exaggeration`, `anim-pose-to-pose`, `anim-solid-drawing`, `anim-appeal`.
+- **Implementação e verificação** (globais) — `motion`, `gsap-*` ou `transitions-dev` para o código do motion; `accessibility-scan` e `accessibility-inspect` para verificar o que você especificou.
 <!-- CUSTOM:INÍCIO -->
 - **`tailwind-design-system`** — sistema de tokens e estratégia de estilo deste projeto.
 - **`minimalist-ui`** — referência de estilo limpo e profissional: `/mnt/c/Users/Augusto/Documents/Dev/romanos-oito/.claude/skills/minimalist-ui/SKILL.md` (só leitura).
