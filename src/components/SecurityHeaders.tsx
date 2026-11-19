@@ -171,7 +171,7 @@ export function SecurityPanel() {
   return (
     <div
       data-ui
-      className="on-panel rounded-nb border-3 border-line bg-surface p-5 text-fg shadow-[8px_8px_0_0_var(--pop-yellow)] sm:p-8"
+      className="on-panel rounded-nb border-3 border-line bg-surface p-5 text-fg shadow-[8px_8px_0_0_var(--pop-blue)] sm:p-8"
     >
       <p role="status" className="type-title tabular-nums">
         {panelStatus(current)}

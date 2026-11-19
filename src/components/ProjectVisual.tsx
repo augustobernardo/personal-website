@@ -18,7 +18,7 @@ function ChatVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "ch
       <div className="flex items-center gap-3 border-b-3 border-line px-4 py-3">
         <span
           aria-hidden="true"
-          className="on-fill flex size-9 shrink-0 items-center justify-center rounded-md border-2 border-line bg-pop-yellow font-mono font-bold"
+          className="on-fill flex size-9 shrink-0 items-center justify-center rounded-md border-2 border-line bg-pop-blue font-mono font-bold"
         >
           {visual.title.slice(0, 1)}
         </span>

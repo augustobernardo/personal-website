@@ -2,8 +2,6 @@ import type { CSSProperties } from "react";
 import { stack } from "@/content/stack";
 import { Section } from "./Section";
 
-const FILLS = ["bg-pop-yellow", "bg-pop-blue", "bg-pop-pink"];
-
 export function Stack() {
   return (
     <div className="border-t-3 border-line">
@@ -20,9 +18,7 @@ export function Stack() {
               className="nb-card overflow-hidden"
               style={{ "--i": i } as CSSProperties}
             >
-              <div
-                className={`on-fill border-b-3 border-line px-5 py-3 ${FILLS[i % FILLS.length]}`}
-              >
+              <div className="on-fill border-b-3 border-line px-5 py-3 bg-pop-blue">
                 <h3 className="type-title">{group.name}</h3>
               </div>
               <div className="p-5">

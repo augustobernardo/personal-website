@@ -18,7 +18,7 @@ export default function Image() {
         justifyContent: "center",
         padding: 80,
         position: "relative",
-        background: "#FFF4DE",
+        background: "#F7F3EA",
         color: "#111111",
       }}
     >

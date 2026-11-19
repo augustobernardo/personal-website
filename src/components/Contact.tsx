@@ -9,7 +9,7 @@ export function Contact() {
   const [local, domain] = profile.email.split("@");
 
   return (
-    <div className="fill-band bg-pop-yellow border-t-3 border-line">
+    <div className="fill-band bg-pop-blue border-t-3 border-line">
       <Section
         id="contato"
         title="Contato"
@@ -21,7 +21,7 @@ export function Contact() {
         </p>
         <a
           href={`mailto:${profile.email}`}
-          className="in-slap nb-btn nb-btn--secondary mt-8 w-full justify-start px-5 py-5 text-[length:var(--step-email)] font-extrabold leading-[1.05] tracking-[-0.02em] [overflow-wrap:anywhere] sm:w-auto sm:px-8"
+          className="in-slap nb-btn nb-btn--primary mt-8 w-full justify-start px-5 py-5 text-[length:var(--step-email)] font-extrabold leading-[1.05] tracking-[-0.02em] [overflow-wrap:anywhere] sm:w-auto sm:px-8"
         >
           <span>
             {local}@<br className="md:hidden" />

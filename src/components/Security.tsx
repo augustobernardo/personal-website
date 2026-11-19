@@ -3,9 +3,9 @@ import { security } from "@/content/security";
 import { SecurityPanel, SecurityRecheck } from "./SecurityHeaders";
 
 const FACT_STYLES = [
-  "bg-pop-yellow rotate-[-2deg]",
-  "bg-pop-blue rotate-[1.5deg]",
-  "bg-pop-pink rotate-[-1deg]",
+  "bg-pop-blue rotate-[-2deg]",
+  "bg-white rotate-[1.5deg]",
+  "bg-pop-blue rotate-[-1deg]",
 ];
 
 export function Security() {

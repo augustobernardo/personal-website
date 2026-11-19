@@ -39,7 +39,7 @@ export function Hero() {
     <div className="mx-auto w-full max-w-7xl px-[var(--margin)] pt-8 pb-16 lg:pt-12 lg:pb-24">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-12">
         <div className="nb-card p-5 sm:p-8 md:col-span-2 lg:col-span-8 lg:row-span-2 lg:p-12">
-          <p className="hero-slap nb-sticker inline-block rotate-[-2deg] bg-pop-yellow">
+          <p className="hero-slap nb-sticker inline-block rotate-[-2deg] bg-pop-blue">
             {profile.role}
           </p>
           <h1 id="hero-titulo" className="type-display mt-5">

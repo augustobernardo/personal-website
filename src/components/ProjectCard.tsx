@@ -4,7 +4,6 @@ import type { CSSProperties } from "react";
 import type { Project } from "@/content/types";
 import { ProjectVisual } from "./ProjectVisual";
 
-const FILLS = ["bg-pop-yellow", "bg-pop-blue", "bg-pop-pink"];
 const TONES = {
   pass: { fill: "bg-ok", icon: Check },
   warn: { fill: "bg-warn", icon: Eye },
@@ -19,9 +18,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
 
   return (
     <article className="nb-card overflow-hidden">
-      <div
-        className={`on-fill flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b-3 border-line px-5 py-4 sm:px-8 ${FILLS[index % FILLS.length]}`}
-      >
+      <div className="on-fill flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b-3 border-line px-5 py-4 sm:px-8 bg-pop-blue">
         <h3 className="type-title">{project.name}</h3>
         <p className="flex flex-wrap items-center gap-2">
           <span className={`nb-sticker in-slap rotate-[2deg] ${toneFill}`}>
@@ -34,7 +31,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
       <div className="grid lg:grid-cols-12">
         {hasVisual && (
           <div
-            className={`in-media border-b-3 border-line bg-bg p-5 sm:p-8 lg:col-span-7 lg:border-b-0 ${paneSide}`}
+            className={`in-media border-b-3 border-line bg-tint p-5 sm:p-8 lg:col-span-7 lg:border-b-0 ${paneSide}`}
           >
             {project.image ? (
               <Image
@@ -61,7 +58,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
           </p>
           {project.decisions.length > 0 && (
             <div className="mt-8" style={{ "--i": 1 } as CSSProperties}>
-              <h4 className="nb-chip on-fill bg-pop-yellow">Decisões técnicas</h4>
+              <h4 className="nb-chip on-fill bg-pop-blue">Decisões técnicas</h4>
               <ul className="list-square mt-4 space-y-2 text-[length:var(--step-body)]">
                 {project.decisions.map((decision) => (
                   <li key={decision}>{decision}</li>

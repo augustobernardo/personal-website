@@ -28,7 +28,7 @@ export function Experience() {
                 </>
               )}
               <span
-                className={`nb-chip${i === careerArc.length - 1 ? " bg-pop-pink on-fill" : ""}`}
+                className={`nb-chip${i === careerArc.length - 1 ? " bg-pop-yellow on-fill" : ""}`}
               >
                 {step}
               </span>
