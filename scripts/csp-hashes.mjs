@@ -7,14 +7,53 @@ import { join } from "node:path";
 import assert from "node:assert/strict";
 
 const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
-const JS_TYPES = new Set(["", "text/javascript", "module"]);
+const ATTR_RE = /([^\s"'=<>/]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
+// JavaScript MIME type essences from the HTML Standard, plus "module".
+const JS_TYPES = new Set([
+  "application/ecmascript",
+  "application/javascript",
+  "application/x-ecmascript",
+  "application/x-javascript",
+  "text/ecmascript",
+  "text/javascript",
+  "text/javascript1.0",
+  "text/javascript1.1",
+  "text/javascript1.2",
+  "text/javascript1.3",
+  "text/javascript1.4",
+  "text/javascript1.5",
+  "text/jscript",
+  "text/livescript",
+  "text/x-ecmascript",
+  "text/x-javascript",
+  "module",
+]);
+
+function parseAttrs(attrs) {
+  const map = new Map();
+  for (const [, name, dq, sq, bare] of attrs.matchAll(ATTR_RE)) {
+    const key = name.toLowerCase();
+    if (!map.has(key)) map.set(key, dq ?? sq ?? bare ?? "");
+  }
+  return map;
+}
+
+// Mirrors the HTML "prepare the script element" type rules for inline scripts.
+function isExecutable(attrs) {
+  const type = attrs.get("type");
+  if (type === undefined || type === "") {
+    const language = attrs.get("language");
+    return !language || JS_TYPES.has(`text/${language.trim().toLowerCase()}`);
+  }
+  const essence = type.split(";")[0].trim().toLowerCase();
+  return essence === "" || JS_TYPES.has(essence);
+}
 
 export function inlineScriptHashes(html) {
   const hashes = [];
-  for (const [, attrs, body] of html.matchAll(SCRIPT_RE)) {
-    if (/\bsrc\s*=/i.test(attrs)) continue;
-    const type = /\btype\s*=\s*["']?([^"'\s>]+)/i.exec(attrs)?.[1].toLowerCase() ?? "";
-    if (!JS_TYPES.has(type)) continue;
+  for (const [, rawAttrs, body] of html.matchAll(SCRIPT_RE)) {
+    const attrs = parseAttrs(rawAttrs);
+    if (attrs.has("src") || !isExecutable(attrs)) continue;
     hashes.push("sha256-" + createHash("sha256").update(body, "utf8").digest("base64"));
   }
   return hashes;
@@ -31,10 +70,14 @@ function htmlFiles(dir) {
 }
 
 function selfTest() {
-  const html = `<script src="/a.js"></script><script type="application/ld+json">{"a":1}</script>
-<script>alert(1)</script><script type="module">alert(1)</script><script async src="x">y</script>`;
-  const got = inlineScriptHashes(html);
-  assert.deepEqual(got, Array(2).fill("sha256-bhHHL3z2vDgxUt0W3dWQOrprscmda2Y5pLsLg4GF+pI="));
+  const alert1 = "sha256-bhHHL3z2vDgxUt0W3dWQOrprscmda2Y5pLsLg4GF+pI=";
+  const skipped = `<script src="/a.js"></script><script type="application/ld+json">{"a":1}</script>
+<script async src="x">y</script><script SRC=x>y</script><script type="text/template">alert(1)</script>`;
+  assert.deepEqual(inlineScriptHashes(skipped), []);
+  const executable = `<script>alert(1)</script><script type="module">alert(1)</script>
+<script type="application/javascript">alert(1)</script><script type=" Text/JavaScript; charset=utf-8">alert(1)</script>
+<script data-src="tracking">alert(1)</script><script type="">alert(1)</script><script language="javascript">alert(1)</script>`;
+  assert.deepEqual(inlineScriptHashes(executable), Array(7).fill(alert1));
   console.log("self-test ok");
 }
 
