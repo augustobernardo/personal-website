@@ -11,7 +11,7 @@ export function Experience() {
         id="experiencia"
         title="Experiência"
         className="mx-auto w-full max-w-7xl px-[var(--margin)] py-16 lg:grid lg:grid-cols-12 lg:gap-6 lg:py-24"
-        titleClassName="in-word type-head lg:col-span-4"
+        titleClassName="in-word type-head lg:col-span-12"
       >
         <p className="mt-6 flex flex-wrap items-center gap-2 lg:col-span-4 lg:col-start-1 lg:row-start-2 lg:flex-col lg:items-start lg:self-start">
           <span className="sr-only">Trajetória: </span>
@@ -35,7 +35,7 @@ export function Experience() {
             </Fragment>
           ))}
         </p>
-        <ol className="in-seq mt-10 grid gap-6 lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1 lg:mt-0">
+        <ol className="in-seq mt-10 grid gap-6 lg:col-span-8 lg:col-start-5 lg:row-start-2 lg:mt-6">
           {experience.map((item, index) => (
             <li
               key={`${item.company}-${item.start}`}
