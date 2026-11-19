@@ -2,7 +2,7 @@ import { profile } from "@/content/profile";
 
 export function Footer() {
   return (
-    <footer className="mt-12 border-t border-line py-6 text-center text-sm text-muted">
+    <footer id="rodape" className="pb-12 pt-8 text-sm text-muted lg:pb-0">
       © {new Date().getFullYear()} {profile.name}
     </footer>
   );

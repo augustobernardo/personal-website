@@ -2,60 +2,64 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-:root {
-  --bg: #fafaf9;
-  --surface: #ffffff;
-  --fg: #1c1917;
-  --muted: #57534e;
-  --border: #d6d3d1;
-  --accent: #1d4ed8;
-  --on-accent: #ffffff;
+@custom-variant tall {
+  @media (min-height: 45rem) {
+    @slot;
+  }
 }
 
-:root[data-theme="dark"] {
+:root {
   --bg: #0c0a09;
   --surface: #1c1917;
+  --surface-2: #292524;
   --fg: #fafaf9;
   --muted: #a8a29e;
-  --border: #44403c;
-  --accent: #60a5fa;
+  --accent: #bef264;
   --on-accent: #0c0a09;
+  --danger: #f87171;
+  --warn: #fbbf24;
+  --chat-out: #1f3a2a;
+  --ease-out: cubic-bezier(0, 0, 0, 1);
+  --ease-in: cubic-bezier(0.3, 0, 1, 1);
+  --dur-press: 100ms;
+  --dur-fast: 150ms;
+  --dur-base: 200ms;
 }
 
-/* No-JS fallback: follow the OS until the theme script sets data-theme. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --bg: #0c0a09;
-    --surface: #1c1917;
-    --fg: #fafaf9;
-    --muted: #a8a29e;
-    --border: #44403c;
-    --accent: #60a5fa;
-    --on-accent: #0c0a09;
-  }
+:root[data-theme="light"] {
+  --bg: #fafaf9;
+  --surface: #eeece9;
+  --surface-2: #e2dfdb;
+  --fg: #1c1917;
+  --muted: #57534e;
+  --accent: #3f6212;
+  --on-accent: #ffffff;
+  --danger: #b91c1c;
+  --warn: #92400e;
+  --chat-out: #e3eed3;
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-fg: var(--fg);
   --color-muted: var(--muted);
-  --color-line: var(--border);
   --color-accent: var(--accent);
   --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-warn: var(--warn);
+  --color-chat-out: var(--chat-out);
   --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 html {
-  color-scheme: light dark;
+  color-scheme: dark;
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -75,28 +79,91 @@ body {
   outline-offset: 2px;
 }
 
-section[id] {
-  scroll-margin-top: 5rem;
+a,
+button {
+  transition-property: color, background-color, opacity, transform, scale;
+  transition-timing-function: var(--ease-out);
 }
 
-@keyframes rise {
+a:active,
+button:active {
+  transition-duration: var(--dur-press);
+}
+
+nav[aria-label="Seções"] a > span {
+  transition-property: transform, scale, background-color;
+  transition-duration: var(--dur-fast);
+  transition-timing-function: var(--ease-in);
+}
+
+nav[aria-label="Seções"] a:is(:hover, [aria-current="location"]) > span {
+  transition-duration: var(--dur-base);
+  transition-timing-function: var(--ease-out);
+}
+
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+@keyframes reveal {
   from {
     opacity: 0;
-    transform: translateY(0.75rem);
-  }
-  to {
-    opacity: 1;
-    transform: none;
+    transform: translateY(1.5rem);
   }
 }
 
-.rise {
-  animation: rise 0.6s ease-out both;
+@keyframes check-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.25rem);
+  }
+}
+
+@keyframes mark-in {
+  from {
+    transform: scale(0.6);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+
+  .check-in {
+    animation: check-in var(--dur-base) var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 30ms);
+  }
+
+  .check-in .mark {
+    animation: mark-in var(--dur-base) var(--ease-out) both;
+    animation-delay: inherit;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rise {
-    animation: none;
+  a:active,
+  button:active {
+    scale: none;
+  }
+
+  nav[aria-label="Seções"] a > span {
+    scale: none;
+    transform: none;
+    transition: none;
+  }
+
+  nav[aria-label="Seções"] a:not([aria-current="location"]):not(:hover) > span {
+    opacity: 0;
   }
 
   *,

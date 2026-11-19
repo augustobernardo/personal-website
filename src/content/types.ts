@@ -23,7 +23,26 @@ export type ExperienceItem = {
   /** ISO month, or null when the role is current. */
   end: string | null;
   highlights: string[];
+  tags: string[];
 };
+
+export type ChatMessage = { from: "user" | "bot"; text?: string; audioSeconds?: number };
+
+export type ProjectVisualData =
+  | { kind: "chat"; title: string; caption: string; messages: ChatMessage[] }
+  | {
+      kind: "verdicts";
+      intro: string;
+      caption: string;
+      verdicts: { label: string; tone: "pass" | "fail" | "warn" }[];
+      stats: { value: string; label: string }[];
+    }
+  | {
+      kind: "flow";
+      caption: string;
+      steps: { event: string; results: string[] }[];
+      note: string;
+    };
 
 export type Project = {
   slug: string;
@@ -38,7 +57,9 @@ export type Project = {
   decisions: string[];
   /** Only published projects are rendered. */
   published: boolean;
-  /** Path under /public. Missing files fall back to a placeholder. */
+  /** Drawn product fragment shown when there is no screenshot. */
+  visual?: ProjectVisualData;
+  /** Path under /public. Replaces the drawn visual when present. */
   image?: string;
 };
 

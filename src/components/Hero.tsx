@@ -3,12 +3,16 @@ import { join } from "node:path";
 import { Download, Mail } from "lucide-react";
 import type { ReactNode } from "react";
 import { profile } from "@/content/profile";
+import { SectionNav } from "./SectionNav";
+import { ThemeToggle } from "./ThemeToggle";
 
 // Evaluated at build time (static export): the button appears once the PDF exists in public/.
 const hasResume = existsSync(join(process.cwd(), "public", profile.resumePath));
 
-const BUTTON =
-  "inline-flex min-h-11 items-center gap-2 rounded-md border border-line px-4 py-2 text-sm font-medium hover:bg-surface";
+const PRIMARY =
+  "inline-flex min-h-11 items-center gap-2 rounded bg-accent px-4 text-sm font-medium text-on-accent transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease-out)] hover:opacity-90 active:scale-[0.98]";
+const SECONDARY =
+  "inline-flex min-h-11 items-center gap-2 rounded px-3 text-sm font-medium text-muted transition-colors duration-[var(--dur-fast)] hover:bg-surface hover:text-fg active:scale-[0.98]";
 
 function BrandIcon({ path }: { path: string }) {
   return (
@@ -25,7 +29,7 @@ const LINKEDIN_PATH =
 
 function External({ href, icon, children }: { href: string; icon: ReactNode; children: string }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={BUTTON}>
+    <a href={href} target="_blank" rel="noopener noreferrer" className={SECONDARY}>
       {icon}
       {children}
       <span className="sr-only"> (abre em nova aba)</span>
@@ -34,35 +38,55 @@ function External({ href, icon, children }: { href: string; icon: ReactNode; chi
 }
 
 export function Hero() {
+  const words = profile.name.split(" ");
+  const line1 = words.slice(0, 2).join(" ");
+  const line2 = words.slice(2).join(" ");
+
   return (
-    <section aria-labelledby="hero-titulo" className="rise py-16 sm:py-24">
-      <h1 id="hero-titulo" className="text-4xl font-semibold tracking-tight sm:text-5xl">
-        {profile.name}
-      </h1>
-      <p className="mt-3 text-lg text-muted">{profile.title}</p>
-      <p className="mt-6 max-w-2xl text-xl">{profile.tagline}</p>
-      <div className="mt-8 flex flex-wrap gap-3">
-        {hasResume && (
-          <a
-            href={profile.resumePath}
-            download
-            className="inline-flex min-h-11 items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:opacity-90"
-          >
-            <Download aria-hidden="true" className="size-4" />
-            Baixar currículo
-          </a>
-        )}
-        <External href={profile.github} icon={<BrandIcon path={GITHUB_PATH} />}>
-          GitHub
-        </External>
-        <External href={profile.linkedin} icon={<BrandIcon path={LINKEDIN_PATH} />}>
-          LinkedIn
-        </External>
-        <a href={`mailto:${profile.email}`} className={BUTTON}>
-          <Mail aria-hidden="true" className="size-4" />
-          E-mail
-        </a>
+    <header className="@container pb-12 pt-16 lg:py-16 lg:tall:sticky lg:tall:top-0 lg:tall:flex lg:tall:h-dvh lg:tall:flex-col lg:tall:justify-between">
+      <div>
+        <h1
+          id="hero-titulo"
+          className="text-[clamp(2rem,10.5cqi,3.5rem)] font-semibold leading-none tracking-[-0.035em]"
+        >
+          <span className="block">{line1}</span>
+          <span className="block">{line2}</span>
+        </h1>
+        <p className="mt-4 text-xl font-medium">{profile.title}</p>
+        <p className="mt-4 max-w-[32ch] text-lg leading-relaxed text-muted text-pretty">
+          {profile.tagline}
+        </p>
+        <div className="mt-8 flex flex-wrap gap-2">
+          {hasResume ? (
+            <a href={profile.resumePath} download className={PRIMARY}>
+              <Download aria-hidden="true" className="size-4" />
+              Baixar currículo
+            </a>
+          ) : (
+            <a href={`mailto:${profile.email}`} className={PRIMARY}>
+              <Mail aria-hidden="true" className="size-4" />
+              E-mail
+            </a>
+          )}
+          <External href={profile.github} icon={<BrandIcon path={GITHUB_PATH} />}>
+            GitHub
+          </External>
+          <External href={profile.linkedin} icon={<BrandIcon path={LINKEDIN_PATH} />}>
+            LinkedIn
+          </External>
+          {hasResume && (
+            <a href={`mailto:${profile.email}`} className={SECONDARY}>
+              <Mail aria-hidden="true" className="size-4" />
+              E-mail
+            </a>
+          )}
+        </div>
+        <SectionNav />
       </div>
-    </section>
+      <div className="mt-8 flex items-center justify-between gap-4">
+        <div>{/* Reserve this space for the separately implemented SecuritySeal. */}</div>
+        <ThemeToggle />
+      </div>
+    </header>
   );
 }

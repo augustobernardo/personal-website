@@ -12,7 +12,7 @@ function subscribe(onChange: () => void) {
 }
 
 // Server snapshot is null: the theme is only known in the browser, so the label stays neutral until hydration.
-const read = (): Theme => (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+const read = (): Theme => (document.documentElement.dataset.theme === "light" ? "light" : "dark");
 
 export function ThemeToggle() {
   const theme = useSyncExternalStore<Theme | null>(subscribe, read, () => null);
@@ -39,7 +39,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={label}
-      className="inline-flex size-11 items-center justify-center rounded-md border border-muted hover:bg-surface"
+      className="inline-flex size-11 items-center justify-center rounded bg-surface text-fg transition-colors duration-[var(--dur-fast)] hover:bg-surface-2"
     >
       <Sun aria-hidden="true" className="hidden size-5 dark:block" />
       <Moon aria-hidden="true" className="size-5 dark:hidden" />
