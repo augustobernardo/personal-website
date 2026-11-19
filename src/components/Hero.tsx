@@ -4,6 +4,7 @@ import { Download, Mail } from "lucide-react";
 import type { ReactNode } from "react";
 import { profile } from "@/content/profile";
 import { SectionNav } from "./SectionNav";
+import { SecuritySeal } from "./SecurityHeaders";
 import { ThemeToggle } from "./ThemeToggle";
 
 // Evaluated at build time (static export): the button appears once the PDF exists in public/.
@@ -84,7 +85,7 @@ export function Hero() {
         <SectionNav />
       </div>
       <div className="mt-8 flex items-center justify-between gap-4">
-        <div>{/* Reserve this space for the separately implemented SecuritySeal. */}</div>
+        <SecuritySeal />
         <ThemeToggle />
       </div>
     </header>
