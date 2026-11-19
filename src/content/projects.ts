@@ -3,6 +3,7 @@ import type { Project } from "./types";
 export const projects: Project[] = [
   {
     slug: "economizaai",
+    status: { label: "Em produção", tone: "pass" },
     name: "EconomizaAI",
     result:
       "Bot de Telegram em produção que registra gastos por texto ou áudio com IA e controla cartões, faturas e parcelamentos.",
@@ -33,6 +34,7 @@ export const projects: Project[] = [
   },
   {
     slug: "classificador-vistoria",
+    status: { label: "Em homologação", tone: "warn" },
     name: "Classificador de fotos de vistoria",
     result:
       "Serviço que avalia qualidade, enquadramento e ângulo das fotos de vistoria e devolve “ok”, “refazer” ou “revisão”. Em homologação com o time de produto.",
@@ -62,6 +64,7 @@ export const projects: Project[] = [
   },
   {
     slug: "superheros-api",
+    status: { label: "Código público", tone: "neutral" },
     name: "Superheros API",
     result:
       "API REST com autenticação JWT (access e refresh token), revogação de tokens, RBAC, rate limiting e logs de auditoria.",
@@ -84,6 +87,7 @@ export const projects: Project[] = [
   },
   {
     slug: "romanos-oito",
+    status: { label: "Site no ar", tone: "pass" },
     name: "Romanos Oito",
     result: "Site do movimento católico Romanos Oito, desenvolvido como trabalho freelance.",
     stack: ["React", "TypeScript", "Vite", "Tailwind CSS", "Supabase"],

@@ -5,6 +5,16 @@ export const siteUrl = "https://augustooliveira.dev.br";
 export const profile: Profile = {
   name: "Augusto Bernardo de Oliveira",
   title: "Desenvolvedor Full Stack | TypeScript · Angular · NestJS",
+  role: "Desenvolvedor Full Stack",
+  specialty: "TypeScript · Angular · NestJS",
+  facts: [
+    { label: "Atuação", value: "Union Solutions, desde jun/2026" },
+    { label: "Base", value: "Vila Velha (ES)" },
+    { label: "Antes", value: "Quase 4 anos em SAP ABAP e Fiori" },
+    { label: "Formação", value: "Sistemas de Informação, UniSales (2021–2025)" },
+    { label: "Certificação", value: "SAP C_FIORDEV_22" },
+    { label: "Inglês", value: "Intermediário" },
+  ],
   tagline:
     "Desenvolvo plataformas web em produção e levo segurança para o dia a dia do desenvolvimento.",
   location: "Vila Velha (ES)",

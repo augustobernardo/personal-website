@@ -1,19 +1,12 @@
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import { Download, Mail } from "lucide-react";
 import type { ReactNode } from "react";
 import { profile } from "@/content/profile";
-import { SectionNav } from "./SectionNav";
-import { SecuritySeal } from "./SecurityHeaders";
-import { ThemeToggle } from "./ThemeToggle";
+import { site } from "@/content/site";
+import { hasResume } from "@/lib/resume";
+import { Section } from "./Section";
 
-// Evaluated at build time (static export): the button appears once the PDF exists in public/.
-const hasResume = existsSync(join(process.cwd(), "public", profile.resumePath));
-
-const PRIMARY =
-  "inline-flex min-h-11 items-center gap-2 rounded bg-accent px-4 text-sm font-medium text-on-accent transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease-out)] hover:opacity-90 active:scale-[0.98]";
 const SECONDARY =
-  "inline-flex min-h-11 items-center gap-2 rounded px-3 text-sm font-medium text-muted transition-colors duration-[var(--dur-fast)] hover:bg-surface hover:text-fg active:scale-[0.98]";
+  "inline-flex min-h-11 items-center gap-2 bg-surface-2 px-4 text-[length:var(--step-small)] font-semibold text-fg transition-colors duration-[var(--dur-fast)] hover:bg-surface-3 active:scale-[0.97]";
 
 function BrandIcon({ path }: { path: string }) {
   return (
@@ -33,7 +26,7 @@ function External({ href, icon, children }: { href: string; icon: ReactNode; chi
     <a href={href} target="_blank" rel="noopener noreferrer" className={SECONDARY}>
       {icon}
       {children}
-      <span className="sr-only"> (abre em nova aba)</span>
+      <span className="sr-only"> {site.links.newTab}</span>
     </a>
   );
 }
@@ -44,50 +37,59 @@ export function Hero() {
   const line2 = words.slice(2).join(" ");
 
   return (
-    <header className="@container pb-12 pt-16 lg:py-16 lg:tall:sticky lg:tall:top-0 lg:tall:flex lg:tall:h-dvh lg:tall:flex-col lg:tall:justify-between">
-      <div>
+    <div className="mt-4 px-3 md:px-[var(--margin)] lg:mt-10 lg:grid lg:grid-cols-12 lg:gap-x-6">
+      <div className="bg-surface px-5 pb-6 pt-5 md:p-10 lg:col-span-8 lg:col-start-3 lg:p-14">
         <h1
           id="hero-titulo"
-          className="text-[clamp(2rem,10.5cqi,3.5rem)] font-semibold leading-none tracking-[-0.035em]"
+          className="text-[length:var(--step-display)] font-extrabold leading-[0.92] tracking-[-0.05em]"
         >
           <span className="block">{line1}</span>
           <span className="block">{line2}</span>
         </h1>
-        <p className="mt-4 text-xl font-medium">{profile.title}</p>
-        <p className="mt-4 max-w-[32ch] text-lg leading-relaxed text-muted text-pretty">
-          {profile.tagline}
-        </p>
-        <div className="mt-8 flex flex-wrap gap-2">
-          {hasResume ? (
-            <a href={profile.resumePath} download className={PRIMARY}>
-              <Download aria-hidden="true" className="size-4" />
-              Baixar currículo
-            </a>
-          ) : (
-            <a href={`mailto:${profile.email}`} className={PRIMARY}>
-              <Mail aria-hidden="true" className="size-4" />
-              E-mail
-            </a>
-          )}
+        <div className="mt-10 grid gap-6 md:grid-cols-[minmax(0,1fr)_17rem] md:items-start md:gap-8">
+          <div>
+            <p className="text-[length:var(--step-lead)] font-semibold">{profile.role}</p>
+            <p className="text-[length:var(--step-lead)] text-muted">{profile.specialty}</p>
+            <p className="mt-4 max-w-[44ch] text-[length:var(--step-body)]">{profile.tagline}</p>
+          </div>
+          {/* SecurityStamp slot: a separate worker owns the live header-check integration. */}
+          <div data-security-stamp-slot="" />
+        </div>
+        <dl className="mt-12 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+          {profile.facts.map(({ label, value }) => (
+            <div key={label}>
+              <dt className="text-[length:var(--step-small)] font-semibold text-muted">{label}</dt>
+              <dd className="mt-1 text-[length:var(--step-body)] font-semibold text-fg">{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <div className="mt-10 flex flex-wrap gap-2">
+          <a href={`mailto:${profile.email}`} className={SECONDARY}>
+            <Mail aria-hidden="true" className="size-4" />
+            {site.links.email}
+          </a>
           <External href={profile.github} icon={<BrandIcon path={GITHUB_PATH} />}>
-            GitHub
+            {site.links.github}
           </External>
           <External href={profile.linkedin} icon={<BrandIcon path={LINKEDIN_PATH} />}>
-            LinkedIn
+            {site.links.linkedin}
           </External>
           {hasResume && (
-            <a href={`mailto:${profile.email}`} className={SECONDARY}>
-              <Mail aria-hidden="true" className="size-4" />
-              E-mail
+            <a href={profile.resumePath} download className={SECONDARY}>
+              <Download aria-hidden="true" className="size-4" />
+              {site.links.resume}
             </a>
           )}
         </div>
-        <SectionNav />
+        <Section
+          id="sobre"
+          title={site.about.title}
+          className="mt-16"
+          titleClassName="text-[length:var(--step-lead)] font-extrabold"
+        >
+          <p className="mt-3 max-w-[65ch] text-[length:var(--step-body)]">{profile.about}</p>
+        </Section>
       </div>
-      <div className="mt-8 flex items-center justify-between gap-4">
-        <SecuritySeal />
-        <ThemeToggle />
-      </div>
-    </header>
+    </div>
   );
 }

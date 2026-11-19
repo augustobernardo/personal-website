@@ -1,10 +1,11 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Schibsted_Grotesk } from "next/font/google";
 import { PersonJsonLd } from "@/components/PersonJsonLd";
+import { site } from "@/content/site";
 import { siteMetadata } from "@/lib/seo";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const schibsted = Schibsted_Grotesk({
+  variable: "--font-schibsted",
   subsets: ["latin"],
 });
 
@@ -24,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      className={`${schibsted.variable} ${geistMono.variable} antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
@@ -32,9 +33,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="bg-bg text-fg">
         <a
           href="#conteudo"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:min-h-11 focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent"
         >
-          Pular para o conteúdo
+          {site.skipLink}
         </a>
         {children}
         <PersonJsonLd />

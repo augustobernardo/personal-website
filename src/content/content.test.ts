@@ -1,8 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { experience } from "./experience";
 import { projects, publishedProjects } from "./projects";
+import { profile } from "./profile";
 
 describe("content", () => {
+  it("gives every published project a status", () => {
+    for (const project of publishedProjects) {
+      expect(project.status.label.trim().length).toBeGreaterThan(0);
+      expect(["pass", "warn", "neutral"]).toContain(project.status.tone);
+    }
+  });
+
+  it("provides non-empty profile facts", () => {
+    expect(profile.facts.length).toBeGreaterThan(0);
+  });
+
   it("renders only published projects", () => {
     expect(publishedProjects.every((project) => project.published)).toBe(true);
     expect(publishedProjects.map((project) => project.slug)).not.toContain("romanos-oito");

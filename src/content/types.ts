@@ -3,9 +3,14 @@ export type Link = {
   href: string;
 };
 
+export type Fact = { label: string; value: string };
+
 export type Profile = {
   name: string;
   title: string;
+  role: string;
+  specialty: string;
+  facts: Fact[];
   tagline: string;
   location: string;
   email: string;
@@ -44,9 +49,12 @@ export type ProjectVisualData =
       note: string;
     };
 
+export type ProjectStatus = { label: string; tone: "pass" | "warn" | "neutral" };
+
 export type Project = {
   slug: string;
   name: string;
+  status: ProjectStatus;
   result: string;
   stack: string[];
   /** Public repository. Absent for corporate projects. */

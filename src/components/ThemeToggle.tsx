@@ -2,6 +2,7 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useSyncExternalStore } from "react";
+import { site } from "@/content/site";
 
 type Theme = "light" | "dark";
 
@@ -28,18 +29,14 @@ export function ThemeToggle() {
   }
 
   const label =
-    theme === null
-      ? "Alternar tema"
-      : theme === "dark"
-        ? "Ativar tema claro"
-        : "Ativar tema escuro";
+    theme === null ? site.theme.toggle : theme === "dark" ? site.theme.light : site.theme.dark;
 
   return (
     <button
       type="button"
       onClick={toggle}
       aria-label={label}
-      className="inline-flex size-11 items-center justify-center rounded bg-surface text-fg transition-colors duration-[var(--dur-fast)] hover:bg-surface-2"
+      className="inline-flex size-11 items-center justify-center bg-surface text-fg transition-colors duration-[var(--dur-fast)] hover:bg-surface-2"
     >
       <Sun aria-hidden="true" className="hidden size-5 dark:block" />
       <Moon aria-hidden="true" className="size-5 dark:hidden" />

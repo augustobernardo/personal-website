@@ -1,4 +1,6 @@
 export const security = {
+  stamp: { title: "Este site, conferido agora", link: "Ver a vistoria completa" },
+  facts: ["Site estático", "nginx sem root", "CSP por hash"],
   title: "Segurança deste site",
   intro:
     "Levo segurança para o dia a dia, e este site é o exemplo mais à mão: estático, servido por nginx em contêiner sem root, com CSP por hash. O painel lê os cabeçalhos que o servidor acabou de enviar para o seu navegador.",
