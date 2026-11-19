@@ -25,7 +25,7 @@ export function startMotion(): () => void {
       // Read phase: measure everything before any write (no layout thrash).
       const vh = window.innerHeight;
       const below = (el: HTMLElement) => isBelowFold(el.getBoundingClientRect().top, vh);
-      const all = <T extends HTMLElement>(sel: string) => void gsap.utils.toArray<T>(sel);
+      const all = <T extends HTMLElement>(sel: string) => gsap.utils.toArray<T>(sel);
 
       const words = all<HTMLElement>(".in-word").filter(below);
       const media = all<HTMLElement>(".in-media").filter(below);
