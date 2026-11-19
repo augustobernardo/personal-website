@@ -34,6 +34,12 @@ Run against `out/` served on a free port, or against the container.
 - The theme toggle switches `data-theme`, updates its `aria-label` and persists after reload.
 - `<details>` opens with the keyboard.
 - With `reduced-motion`, section animation is `none`.
+- Mobile menu (< 1024 px): the hamburger has `aria-expanded` and `aria-controls`; opening focuses
+  the first link, makes `#conteudo` and `#rodape` inert and locks scroll; Esc or the scrim closes it
+  and returns focus; a link closes it and navigates.
+- Header hides on scroll down and returns on scroll up (never with reduced motion); the active
+  section pill slides to the current link.
+- With the JS bundle blocked, the plain mobile link row is still present.
 - On the container: no CSP violations in the console, and the theme toggle still hydrates.
 
 Specialist: `portfolio-qa-e2e`.

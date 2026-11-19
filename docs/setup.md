@@ -76,6 +76,24 @@ Temporary resources created and removed: scaffold and toolkit clone in the sessi
 containers `pw-test`/`pw-local`, a local `python3 -m http.server` on port 3100, the agent-browser
 session, and Lighthouse profile folders created inside the repository by WSL.
 
+## Redesign iterations (2026-11-19)
+
+The owner rejected three directions before the current one: the original single column, a
+two-column sticky sidebar, and an "inspection report" sheet. Each is in the Git history. The
+current design is neobrutalist (`docs/design.md`), with 60-20-10 palettes in both themes, a GSAP
+3.15.1 reveal layer loaded by dynamic import, and a sticky header with an animated mobile menu.
+
+| Item                                                    | State     | Evidence                                                                                                                                                                                                                                                       |
+| ------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UX specs                                                | done      | Written by the UX/UI designer role (`.claude/agents/portfolio-ux-ui-designer.md`) using the vault UX-law and motion skills                                                                                                                                     |
+| Implementation                                          | done      | Sonnet subagents and Codex (`codex-routed`, Jev-routed models); Codex hit its usage limit once, Sonnet finished those groups                                                                                                                                   |
+| `pnpm check`, `pnpm lint:typed`, `pnpm build`, Prettier | validated | all pass on HEAD                                                                                                                                                                                                                                               |
+| Lighthouse (`pnpm exec lhci autorun`, 3 runs)           | validated | Performance 98–99, Accessibility 100, Best Practices 100, SEO 100                                                                                                                                                                                              |
+| GSAP chunk                                              | validated | about 45 KB gzip, absent from the HTML, never fetched with reduced motion; `out/index.html` has no `opacity:0`                                                                                                                                                 |
+| Browser (agent-browser, headed, container)              | validated | no overflow at 320–1440 px; axe 0 violations in both themes; mobile menu: `aria-expanded`, `inert`, scroll lock, Esc returns focus, link closes and navigates; header hides on scroll down and returns on scroll up; active-section pill slides; no CSP errors |
+| Codex adversarial review (`gpt-6.1-sol` via Jev)        | ran       | 1 medium: mobile links vanished if hydration failed. Fixed (`bd0c57d`)                                                                                                                                                                                         |
+| Jev classification: public "Segurança deste site" panel | ran       | `keep_public` (0.86 / 0.91 across option orders), added risk 0.22 of 3; confirmed by review: it shows only what the HTTP response already exposes                                                                                                              |
+
 ## Memory and harness evidence
 
 - Memory: canonical knowledge lives in the versioned docs listed above, loaded through
