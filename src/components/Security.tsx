@@ -16,7 +16,7 @@ export function Security() {
         aria-labelledby="seguranca-titulo"
         className="in-seq mx-auto grid w-full max-w-7xl gap-8 px-[var(--margin)] py-16 lg:grid-cols-12 lg:grid-rows-[auto_auto_auto_1fr] lg:gap-x-10 lg:gap-y-6 lg:py-24"
       >
-        <ul className="flex flex-wrap gap-3 lg:col-span-5 lg:row-start-1">
+        <ul data-parallax="float" className="flex flex-wrap gap-3 lg:col-span-5 lg:row-start-1">
           {security.facts.map((fact, index) => (
             <li
               key={fact}

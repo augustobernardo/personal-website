@@ -236,22 +236,28 @@ export function SecurityStamp() {
     current.status === "done" &&
     current.report.present < current.report.total &&
     !(current.local && current.report.present === 0);
-  const stateKey =
-    current.status === "done" ? `${current.status}-${current.checkedAt}` : current.status;
+  // Static, loading and error share one element so the lift transitions; only a real result remounts and slaps.
+  const stateKey = current.status === "done" ? `done-${current.checkedAt}` : "idle";
 
   const fill = complete ? "bg-ok on-fill" : partial ? "bg-warn on-fill" : "bg-surface text-fg";
   const Icon = complete ? ShieldCheck : partial ? ShieldAlert : Shield;
 
   return (
     <div
-      className={`relative w-full max-w-[22rem] rotate-[-2.5deg] rounded-nb border-3 border-line p-5 shadow-hard-lg ${fill}`}
+      key={stateKey}
+      data-state={current.status}
+      className={`stamp ${current.status === "done" ? "stamp-in" : ""} relative w-full max-w-[22rem] rotate-[-2.5deg] rounded-nb border-3 border-line p-5 shadow-hard-lg ${fill}`}
     >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-2 rounded-[0.25rem] border-2 border-dashed border-current opacity-60"
       />
-      <Icon aria-hidden="true" strokeWidth={2.5} className="absolute right-4 top-4 size-8" />
-      <div key={stateKey} className="stamp-in relative">
+      <Icon
+        aria-hidden="true"
+        strokeWidth={2.5}
+        className="stamp-icon absolute right-4 top-4 size-8"
+      />
+      <div className="relative">
         <p className="font-mono text-[0.875rem] font-bold">{security.stamp.title}</p>
         <p className="type-title mt-3 tabular-nums">{sealLabel(current)}</p>
         {current.status === "done" ? (
