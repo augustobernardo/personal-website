@@ -1,4 +1,5 @@
 import { ArrowRight, Check, Eye, Play, RotateCcw } from "lucide-react";
+import type { CSSProperties } from "react";
 import type { ProjectVisualData } from "@/content/types";
 
 const AUDIO_BARS = [
@@ -25,11 +26,12 @@ function ChatVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "ch
           <p className="text-sm text-muted">bot</p>
         </div>
       </div>
-      <ol aria-label="Conversa de exemplo" className="flex flex-col gap-2">
+      <ol aria-label="Conversa de exemplo" className="in-seq flex flex-col gap-2">
         {visual.messages.map((message, index) => (
           <li
             key={index}
-            className={`max-w-[85%] rounded-xl px-3 py-2 text-sm leading-normal break-words ${message.from === "user" ? "self-end bg-chat-out" : "self-start bg-surface-2"}`}
+            style={{ "--i": index } as CSSProperties}
+            className={`max-w-[85%] rounded-xl px-3 py-2 text-sm leading-normal break-words ${message.from === "user" ? "self-end bg-chat-out" : "self-start bg-surface"}`}
           >
             <span className="sr-only">{message.from === "user" ? "Você: " : "Bot: "}</span>
             {message.text}
@@ -74,7 +76,7 @@ function VerdictsVisual({ visual }: { visual: Extract<ProjectVisualData, { kind:
           return (
             <li
               key={label}
-              className={`inline-flex min-h-11 items-center gap-2 rounded bg-surface-2 px-4 text-xl font-semibold ${className}`}
+              className={`inline-flex min-h-11 items-center gap-2 rounded bg-surface px-4 text-xl font-semibold ${className}`}
             >
               <Icon aria-hidden="true" className="size-5" />
               {label}
@@ -97,10 +99,11 @@ function VerdictsVisual({ visual }: { visual: Extract<ProjectVisualData, { kind:
 function FlowVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "flow" }> }) {
   return (
     <>
-      <ol className="flex flex-col gap-3">
-        {visual.steps.map(({ event, results }) => (
+      <ol className="in-seq flex flex-col gap-3">
+        {visual.steps.map(({ event, results }, index) => (
           <li
             key={event}
+            style={{ "--i": index } as CSSProperties}
             className="grid gap-2 sm:grid-cols-[minmax(0,11rem)_auto_minmax(0,1fr)] sm:items-center"
           >
             <span className="text-sm font-medium">{event}</span>
@@ -110,7 +113,7 @@ function FlowVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "fl
                 <li
                   key={result}
                   translate="no"
-                  className="max-w-full rounded bg-surface-2 px-2 py-1 font-mono text-sm break-words"
+                  className="max-w-full rounded bg-surface px-2 py-1 font-mono text-sm break-words"
                 >
                   {result}
                 </li>
@@ -127,12 +130,14 @@ function FlowVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "fl
 export function ProjectVisual({ visual, name }: { visual: ProjectVisualData; name: string }) {
   return (
     <figure aria-label={name}>
-      <div data-ui className="rounded bg-surface p-5 sm:p-6">
+      <div data-ui className="bg-bg p-5 sm:p-8">
         {visual.kind === "chat" && <ChatVisual visual={visual} />}
         {visual.kind === "verdicts" && <VerdictsVisual visual={visual} />}
         {visual.kind === "flow" && <FlowVisual visual={visual} />}
       </div>
-      <figcaption className="mt-3 text-sm text-muted">{visual.caption}</figcaption>
+      <figcaption className="mt-3 text-[length:var(--step-small)] text-muted">
+        {visual.caption}
+      </figcaption>
     </figure>
   );
 }
