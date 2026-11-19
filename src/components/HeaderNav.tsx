@@ -224,7 +224,8 @@ export function HeaderNav({ brand, cta }: Props) {
           </div>
         </div>
       </div>
-      <noscript>
+      {/* Plain links until hydration succeeds: covers no-JS and a bundle that fails to load. */}
+      {!mounted && (
         <nav
           aria-label={site.header.sections}
           className="mx-auto flex max-w-7xl flex-wrap gap-x-5 px-[var(--margin)] pb-2 lg:hidden"
@@ -235,7 +236,7 @@ export function HeaderNav({ brand, cta }: Props) {
             </a>
           ))}
         </nav>
-      </noscript>
+      )}
       <div
         className="menu-scrim fixed inset-x-0 bottom-0 top-[calc(4rem+3px)] lg:hidden"
         style={{ background: "var(--scrim)" }}
