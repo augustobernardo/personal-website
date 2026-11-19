@@ -9,7 +9,7 @@ server code, database, API or environment variable.
 ```
 src/content/*.ts  ->  src/components/*.tsx  ->  src/app/page.tsx  ->  next build  ->  out/
                                                                                        |
-Dockerfile: node:24-alpine (build + CSP hashes) -> nginx-unprivileged (serve out/ on 8080)
+Dockerfile: node:24-alpine (build + CSP hashes) -> nginx 1.30.7, non-root (serve out/ on 8080)
 ```
 
 ## Layout

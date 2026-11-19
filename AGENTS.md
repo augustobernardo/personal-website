@@ -6,7 +6,7 @@ Single-page portfolio for augustooliveira.dev.br. Scope: `PRODUCT.md`.
 
 - Stack: Next.js 16.4.6 (App Router, `output: "export"`), React 19.3, TypeScript 5.9 strict,
   Tailwind CSS 4.3, lucide-react, Vitest 5. Node 24 (`.nvmrc`), pnpm 12.18 (`packageManager`).
-- Production: nginx-unprivileged container (`Dockerfile`, `nginx.conf`) on Easypanel behind
+- Production: non-root nginx container (official image, uid 101) (`Dockerfile`, `nginx.conf`) on Easypanel behind
   Cloudflare. No database, no server runtime, no environment variables.
 - Setup evidence and decisions: `docs/setup.md`.
 

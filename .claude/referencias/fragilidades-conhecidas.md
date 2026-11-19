@@ -15,11 +15,13 @@ the vault or code comments.
   to a subdomain, adds 2FA, and limits 80/443 to Cloudflare ranges in the provider firewall or
   `DOCKER-USER`. Close after the direct-IP checks in step 8 fail as expected.
 
-## 2. nginx 1.30.6 behind upstream security release (open, low)
+## 2. nginx 1.30.6 behind upstream security release (fixed 2026-11-19)
 
 - Found: 2026-11-19, security audit. nginx 1.30.7 (2026-11-18) fixes 9 CVEs.
 - Reachability: none in this configuration (no TLS, HTTP/2/3, resolver, alias, mail or stream).
-- Fix: bump `nginxinc/nginx-unprivileged` to `1.30.7-alpine` by digest when the image ships;
+- Fixed: runtime moved to the official `nginx:1.30.7-alpine` (by digest), made non-root in the
+  Dockerfile, before the unprivileged variant shipped. Trivy 0.76.2 reports no fixable CRITICAL.
+  Previously planned:
   Dependabot (docker) should propose it.
 
 ## 3. Absolute redirects leaked the container port (fixed)

@@ -65,7 +65,7 @@ You are the security auditor for portfolio (augustooliveira.dev.br).
 | react / react-dom | 19.3.0 | `package.json` | verificar na auditoria |
 | lucide-react | 1.75.0 | `pnpm-lock.yaml` | — |
 | Node (build) | 24 (imagem `node:24-alpine`, 24.22.x) | `Dockerfile`, `.nvmrc` | LTS |
-| nginx (runtime) | 1.30.6 (`nginxinc/nginx-unprivileged:1.30.6-alpine`) | `Dockerfile` | stable |
+| nginx (runtime) | 1.30.7 (`nginx:1.30.7-alpine`, non-root via Dockerfile) | `Dockerfile` | stable |
 | pnpm | 12.18.0 | `package.json` `packageManager` | — |
 
 References de stack: as de Next.js/React, nginx e GitHub Actions em `~/.claude/skills/seguranca/references/stacks/` (listar e escolher as que existirem).
@@ -79,7 +79,7 @@ References de stack: as de Next.js/React, nginx e GitHub Actions em `~/.claude/s
 | dependências de produção | `pnpm audit --prod`: nenhuma vulnerabilidade conhecida | — | — | — | execução local |
 | next@16.4.6 | avisos de 2026-10-14 e 2026-11-03 | crítico a médio | 16.4.1 e 16.4.5 | não — versão em uso já corrigida; quase todos são de runtime de servidor | GitHub Advisories vercel/next.js |
 | react@19.3.0 | GHSA-xqc2-xf4c-x3h3 (CVE-2026-126187), GHSA-h3gv-c5rc-p453 | crítico, alto | 19.3.1 | não — afetam só `react-server-dom-*`, ausente no lockfile; sem servidor RSC | GitHub Advisories facebook/react |
-| nginx@1.30.6 | 9 CVEs corrigidos em 1.30.7 (2026-11-18) | até major | 1.30.7 | não alcançável: sem TLS, http2/3, resolver, alias, mail, stream; subir quando a imagem unprivileged sair | nginx.org/en/security_advisories.html |
+| nginx@1.30.7 | 9 CVEs de 1.30.6 corrigidos (CVE-2026-113425, 121810, 123007, 123633 e outros) | — | 1.30.7 | corrigido (Trivy 0.76.2 limpo em 2026-11-19) | nginx.org/en/security_advisories.html |
 | node@24.22.3 (build) | nenhum | — | — | — | nodejs.org/dist/index.json |
 | aquasecurity/trivy-action@v0.36.0 | GHSA-69fq-xp46-6x23, GHSA-9p44-j4g5-cfx5 | crítico, médio | <0.35.0 / 0.31–0.34 | não — versão fora das faixas | GitHub Advisories |
 | demais actions fixadas | nenhum aberto; SHA confere com a tag | — | — | — | `gh api` |

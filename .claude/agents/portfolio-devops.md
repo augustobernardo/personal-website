@@ -42,7 +42,7 @@ You are the DevSecOps engineer for portfolio (augustooliveira.dev.br).
 ## Container e runtime
 
 <!-- CUSTOM:INÍCIO -->
-- **Dockerfile**: `Dockerfile` — build `node:24-alpine@sha256:…` (pnpm via corepack), runtime `nginxinc/nginx-unprivileged:1.30.6-alpine@sha256:…`, usuário uid 101, multi-stage sim. Digests resolvidos em 2026-11-19; Dependabot atualiza.
+- **Dockerfile**: `Dockerfile` — build `node:24-alpine@sha256:…` (pnpm via corepack), runtime `nginx:1.30.7-alpine@sha256:…` made non-root in the Dockerfile (pid and temp paths in /tmp, `/etc/nginx` read-only), usuário uid 101, multi-stage sim. Digests resolvidos em 2026-11-19; Dependabot atualiza.
 - **CSP**: `scripts/csp-hashes.mjs` roda no build da imagem, calcula sha256 de cada `<script>` inline executável em `out/**/*.html` e gera `/etc/nginx/csp.conf`. `script-src` sem `unsafe-inline`; `style-src` com `unsafe-inline` (atributos `style=` do React). Self-test: `node scripts/csp-hashes.mjs --self-test`.
 - **nginx**: `nginx.conf` → `/etc/nginx/conf.d/default.conf`; headers em `/etc/nginx/security-headers.conf` (heredoc no Dockerfile) incluídos em cada `location` (herança de `add_header`). `/_next/static/` imutável 1 ano; HTML `no-cache`; 404 customizado; gzip; `server_tokens off`; sem HSTS.
 - **Compose / manifest**: não há; Easypanel builda o Dockerfile.

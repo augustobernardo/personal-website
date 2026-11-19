@@ -13,7 +13,7 @@ NestJS). It is a single page in Brazilian Portuguese, built so that a recruiter 
 | Styling   | Tailwind CSS 4, design tokens in `src/app/globals.css`, Geist via `next/font`             |
 | Icons     | `lucide-react`                                                                            |
 | Tests     | Vitest for content and helpers, axe and keyboard checks with agent-browser, Lighthouse CI |
-| Runtime   | `nginxinc/nginx-unprivileged` (uid 101, port 8080), images pinned by digest               |
+| Runtime   | official `nginx` 1.30.7 made non-root (uid 101, port 8080), images pinned by digest       |
 | Tooling   | pnpm, Node 24 (`.nvmrc`), ESLint (toolkit quality rules), Prettier                        |
 
 ## Technical decisions
