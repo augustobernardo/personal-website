@@ -6,7 +6,12 @@ export const site = {
     { id: "stack", label: "Stack" },
     { id: "contato", label: "Contato" },
   ],
-  header: { monogram: "AO", home: "Augusto Oliveira, início", sections: "Seções" },
+  header: {
+    monogram: "AO",
+    home: "Augusto Oliveira, início",
+    sections: "Seções",
+    menu: "Menu",
+  },
   links: {
     downloadResume: "Baixar currículo",
     resume: "Currículo",
