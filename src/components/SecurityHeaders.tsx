@@ -174,7 +174,7 @@ export function SecurityPanel() {
     current.status === "static" || (current.status === "done" && current.report.present === 0);
 
   return (
-    <div data-ui className="reveal rounded bg-surface p-5 sm:p-6">
+    <div data-ui className="bg-bg p-6 sm:p-8">
       <p role="status" className="text-lg font-semibold tabular-nums">
         {panelStatus(current)}
       </p>
@@ -219,44 +219,88 @@ export function SecurityPanel() {
           </code>
         </div>
       ) : null}
-      {current.status !== "static" ? (
-        <button
-          type="button"
-          aria-disabled={current.status === "loading"}
-          onClick={current.status === "loading" ? undefined : () => void check()}
-          className="mt-4 inline-flex min-h-11 items-center gap-2 rounded bg-surface-2 px-4 text-sm font-medium transition-[color,transform] duration-[var(--dur-fast)] hover:text-accent active:scale-[0.98]"
-        >
-          <RefreshCw aria-hidden="true" className="size-4" />
-          {current.status === "loading" ? security.button.loading : security.button.check}
-        </button>
-      ) : null}
     </div>
+  );
+}
+
+function sealLabel(current: State): string {
+  if (current.status !== "done") return security.seal[current.status];
+  const { present, total } = current.report;
+  return present === 0 && current.local
+    ? security.seal.local
+    : security.seal.active(present, total);
+}
+
+export function SecurityStamp() {
+  const current = useHeadersState();
+  const complete = current.status === "done" && current.report.present === current.report.total;
+  const partial =
+    current.status === "done" &&
+    current.report.present < current.report.total &&
+    !(current.local && current.report.present === 0);
+  const stateKey =
+    current.status === "done" ? `${current.status}-${current.checkedAt}` : current.status;
+
+  return (
+    <div
+      className={`border-t-[6px] border-dotted border-surface p-5 md:border-l-[6px] md:border-t-0 ${complete ? "on-stamp bg-stamp text-on-stamp" : "bg-surface-2 text-fg"}`}
+    >
+      <div key={stateKey} className="stamp-in">
+        <p className="text-[length:var(--step-small)] font-semibold">{security.stamp.title}</p>
+        <p
+          className={`mt-2 text-[length:var(--step-lead)] font-extrabold leading-tight tabular-nums ${partial ? "text-danger" : ""}`}
+        >
+          {sealLabel(current)}
+        </p>
+        {current.status === "done" ? (
+          <p className="mt-2 text-[length:var(--step-small)]">
+            {security.status.source(current.host, current.checkedAt)}
+          </p>
+        ) : null}
+        <a
+          href="#seguranca"
+          className="mt-1 inline-flex min-h-11 items-center text-[length:var(--step-small)] font-semibold underline underline-offset-4"
+        >
+          {security.stamp.link}
+        </a>
+      </div>
+    </div>
+  );
+}
+
+export function SecurityRecheck() {
+  const current = useHeadersState();
+  if (current.status === "static") return null;
+
+  return (
+    <button
+      type="button"
+      aria-disabled={current.status === "loading"}
+      onClick={current.status === "loading" ? undefined : () => void check()}
+      style={{ "--i": 3 } as CSSProperties}
+      className="inline-flex min-h-[60px] w-full items-center justify-center gap-2 bg-fg px-4 text-[length:var(--step-body)] font-semibold text-bg transition-[transform,opacity] duration-[var(--dur-fast)] ease-[var(--ease-out)] hover:opacity-90 active:scale-[0.98] active:duration-[var(--dur-press)] lg:col-span-5 lg:col-start-8 lg:row-start-4 lg:min-h-[72px] lg:self-end"
+    >
+      <RefreshCw aria-hidden="true" className="size-4" />
+      {current.status === "loading" ? security.button.loading : security.button.check}
+    </button>
   );
 }
 
 export function SecuritySeal() {
   const current = useHeadersState();
-  let label: string;
   let tone = "bg-muted";
-  if (current.status === "done") {
+  if (current.status === "done" && !(current.report.present === 0 && current.local)) {
     const { present, total } = current.report;
-    if (present === 0 && current.local) {
-      label = security.seal.local;
-    } else {
-      label = security.seal.active(present, total);
-      tone = present === total ? "bg-accent" : "bg-danger";
-    }
-  } else {
-    label = security.seal[current.status];
+    tone = present === total ? "bg-accent" : "bg-danger";
   }
 
   return (
     <a
       href="#seguranca"
-      className="group inline-flex min-h-11 items-center gap-2 text-sm text-muted transition-colors duration-[var(--dur-fast)] hover:text-fg"
+      className="group inline-flex min-h-11 items-center gap-2 text-[length:var(--step-small)] text-muted transition-colors duration-[var(--dur-fast)] hover:text-fg"
     >
       <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${tone}`} />
-      <span className="tabular-nums">{label}</span>
+      <span className="tabular-nums">{sealLabel(current)}</span>
     </a>
   );
 }

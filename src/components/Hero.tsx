@@ -4,6 +4,7 @@ import { profile } from "@/content/profile";
 import { site } from "@/content/site";
 import { hasResume } from "@/lib/resume";
 import { Section } from "./Section";
+import { SecurityStamp } from "./SecurityHeaders";
 
 const SECONDARY =
   "inline-flex min-h-11 items-center gap-2 bg-surface-2 px-4 text-[length:var(--step-small)] font-semibold text-fg transition-colors duration-[var(--dur-fast)] hover:bg-surface-3 active:scale-[0.97]";
@@ -53,7 +54,7 @@ export function Hero() {
             <p className="mt-4 max-w-[44ch] text-[length:var(--step-body)]">{profile.tagline}</p>
           </div>
           {/* SecurityStamp slot: a separate worker owns the live header-check integration. */}
-          <div data-security-stamp-slot="" />
+          <SecurityStamp />
         </div>
         <dl className="mt-12 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
           {profile.facts.map(({ label, value }) => (
