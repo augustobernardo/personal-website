@@ -37,6 +37,22 @@ export function HeaderNav({ brand, cta }: Props) {
   const [active, setActive] = useState<string | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const [pill, setPill] = useState({ x: 0, width: 0 });
+
+  // Measure the active desktop link so the shared pill can slide to it (and follow resizes).
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const measure = () => {
+      const link = active ? nav.querySelector<HTMLElement>(`[data-nav="${active}"]`) : null;
+      setPill(link ? { x: link.offsetLeft, width: link.offsetWidth } : { x: 0, width: 0 });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(nav);
+    return () => observer.disconnect();
+  }, [active]);
 
   // Layout effect: inert and scroll lock must be gone before the browser follows an anchor.
   useLayoutEffect(() => {
@@ -156,18 +172,28 @@ export function HeaderNav({ brand, cta }: Props) {
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-[var(--margin)] lg:h-18">
         {brand}
         <nav
+          ref={navRef}
           aria-label={site.header.sections}
-          className="hidden lg:flex lg:flex-1 lg:justify-center lg:gap-x-2"
+          className="relative hidden lg:flex lg:flex-1 lg:justify-center lg:gap-x-2"
         >
+          {/* One shared pill slides to the active link, so a section change reads as movement. */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-0 h-11 rounded-nb border-2 border-line bg-pop-blue motion-safe:transition-[transform,width,opacity] motion-safe:duration-[260ms] motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{
+              width: pill.width,
+              transform: `translate(${pill.x}px, -50%)`,
+              opacity: pill.width > 0 ? 1 : 0,
+            }}
+          />
           {site.nav.map(({ id, label }) => (
             <a
               key={id}
               href={`#${id}`}
+              data-nav={id}
               aria-current={active === id ? "true" : undefined}
-              className={`${LINK_BASE} decoration-3 underline-offset-[6px] ${
-                active === id
-                  ? "on-fill border-line bg-pop-blue"
-                  : "border-transparent hover:underline"
+              className={`${LINK_BASE} relative border-transparent decoration-3 underline-offset-[6px] motion-safe:transition-colors motion-safe:duration-[260ms] ${
+                active === id ? "on-fill" : "hover:underline"
               }`}
             >
               {label}
