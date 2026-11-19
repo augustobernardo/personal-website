@@ -14,14 +14,14 @@ export function Contact() {
         id="contato"
         title="Contato"
         className="mx-auto w-full max-w-7xl px-[var(--margin)] py-16 lg:py-24"
-        titleClassName="type-head"
+        titleClassName="in-word type-head"
       >
         <p className="mt-4 max-w-[34ch] text-[length:var(--step-lead)] font-medium">
           {site.contact.lead}
         </p>
         <a
           href={`mailto:${profile.email}`}
-          className="nb-btn nb-btn--secondary mt-8 w-full justify-start px-5 py-5 text-[length:var(--step-email)] font-extrabold leading-[1.05] tracking-[-0.02em] [overflow-wrap:anywhere] sm:w-auto sm:px-8"
+          className="in-slap nb-btn nb-btn--secondary mt-8 w-full justify-start px-5 py-5 text-[length:var(--step-email)] font-extrabold leading-[1.05] tracking-[-0.02em] [overflow-wrap:anywhere] sm:w-auto sm:px-8"
         >
           <span>
             {local}@<br className="md:hidden" />
@@ -30,7 +30,7 @@ export function Contact() {
         </a>
         <div className="mt-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <p className="font-bold">{profile.location}</p>
-          <ul className="flex flex-wrap gap-3">
+          <ul className="in-seq flex flex-wrap gap-3">
             <li>
               <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className={LINK}>
                 {site.links.linkedin}

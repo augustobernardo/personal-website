@@ -10,7 +10,7 @@ export function Footer() {
   return (
     <footer id="rodape" className="inverse">
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-[var(--margin)] py-12 md:grid-cols-2 lg:py-16">
-        <p className="type-head">
+        <p className="in-word type-head">
           <span className="block">{words.slice(0, 2).join(" ")}</span>
           <span className="block">{words.slice(2).join(" ")}</span>
         </p>
