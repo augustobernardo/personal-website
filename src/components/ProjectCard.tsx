@@ -1,36 +1,41 @@
+import { ArrowUpRight, Check, CircleDot, Eye } from "lucide-react";
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import type { Project } from "@/content/types";
 import { ProjectVisual } from "./ProjectVisual";
 
-const FILLS = ["bg-surface", "bg-surface-2", "bg-surface-3"];
-const TONES = { pass: "bg-accent", warn: "bg-warn", neutral: "bg-muted" };
-const LINK =
-  "inline-flex min-h-11 items-center gap-2 bg-surface-2 px-4 text-[length:var(--step-small)] font-semibold text-fg transition-colors duration-[var(--dur-fast)] hover:bg-surface-3 active:scale-[0.97]";
+const FILLS = ["bg-pop-yellow", "bg-pop-blue", "bg-pop-pink"];
+const TONES = {
+  pass: { fill: "bg-ok", icon: Check },
+  warn: { fill: "bg-warn", icon: Eye },
+  neutral: { fill: "bg-white", icon: CircleDot },
+};
+const LINK = "nb-btn nb-btn--secondary";
 
 export function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const fill = FILLS[index % FILLS.length];
   const hasVisual = Boolean(project.image ?? project.visual);
+  const { fill: toneFill, icon: StatusIcon } = TONES[project.status.tone];
+  const paneSide = index % 2 === 0 ? "lg:border-r-3" : "lg:order-2 lg:border-l-3";
 
   return (
-    <article className={`relative ${fill}`}>
+    <article className="nb-card overflow-hidden">
       <div
-        className={`in-tab absolute -top-11 left-[var(--margin)] flex h-11 min-w-[200px] w-max max-w-[calc(100%-2*var(--margin))] items-center px-7 ${fill} [clip-path:polygon(0_100%,14px_0,calc(100%-14px)_0,100%_100%)]`}
+        className={`on-fill flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b-3 border-line px-5 py-4 sm:px-8 ${FILLS[index % FILLS.length]}`}
       >
-        <h3 className="whitespace-nowrap text-[length:var(--step-body)] font-extrabold md:text-[length:var(--step-lead)]">
-          {project.name}
-        </h3>
-      </div>
-      <div className="flex h-16 items-center gap-2 px-[var(--margin)] text-[length:var(--step-small)] font-semibold md:justify-end">
-        <span aria-hidden="true" className={`size-2.5 shrink-0 ${TONES[project.status.tone]}`} />
-        <p>
-          {project.status.label}
-          {project.corporate && <span className="text-muted"> · Projeto corporativo</span>}
+        <h3 className="type-title">{project.name}</h3>
+        <p className="flex flex-wrap items-center gap-2">
+          <span className={`nb-sticker in-slap rotate-[2deg] ${toneFill}`}>
+            <StatusIcon aria-hidden="true" className="size-4" strokeWidth={2.5} />
+            {project.status.label}
+          </span>
+          {project.corporate && <span className="nb-chip">Projeto corporativo</span>}
         </p>
       </div>
-      <div className="grid gap-8 px-[var(--margin)] pb-24 lg:grid-cols-12 lg:gap-6">
+      <div className="grid lg:grid-cols-12">
         {hasVisual && (
-          <div className="in-media lg:col-span-7">
+          <div
+            className={`in-media border-b-3 border-line bg-bg p-5 sm:p-8 lg:col-span-7 lg:border-b-0 ${paneSide}`}
+          >
             {project.image ? (
               <Image
                 src={project.image}
@@ -38,41 +43,44 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
                 width={640}
                 height={360}
                 loading="lazy"
-                className="aspect-video w-full object-cover"
+                className="aspect-video w-full rounded-nb border-3 border-line object-cover"
               />
             ) : project.visual ? (
               <ProjectVisual visual={project.visual} name={project.name} />
             ) : null}
           </div>
         )}
-        <div className={`in-seq ${hasVisual ? "lg:col-span-5" : "lg:col-span-12"}`}>
+        <div
+          className={`in-seq p-5 sm:p-8 lg:p-10 ${hasVisual ? "lg:col-span-5" : "lg:col-span-12"}`}
+        >
           <p
-            className="max-w-[40ch] text-[length:var(--step-lead)]"
+            className="max-w-[40ch] text-[length:var(--step-lead)] font-medium"
             style={{ "--i": 0 } as CSSProperties}
           >
             {project.result}
           </p>
           {project.decisions.length > 0 && (
             <div className="mt-8" style={{ "--i": 1 } as CSSProperties}>
-              <h4 className="text-[length:var(--step-small)] font-semibold text-muted">
-                Decisões técnicas
-              </h4>
-              <ul className="mt-2 list-disc space-y-2 pl-5 text-[length:var(--step-body)]">
+              <h4 className="nb-chip on-fill bg-pop-yellow">Decisões técnicas</h4>
+              <ul className="list-square mt-4 space-y-2 text-[length:var(--step-body)]">
                 {project.decisions.map((decision) => (
                   <li key={decision}>{decision}</li>
                 ))}
               </ul>
             </div>
           )}
-          <p
-            className="mt-6 text-[length:var(--step-small)] text-muted"
-            style={{ "--i": 2 } as CSSProperties}
-          >
-            <span className="sr-only">Tecnologias: </span>
-            {project.stack.join(" · ")}
-          </p>
+          <div className="mt-8" style={{ "--i": 2 } as CSSProperties}>
+            <p className="sr-only">Tecnologias:</p>
+            <ul className="flex flex-wrap gap-2">
+              {project.stack.map((tech) => (
+                <li key={tech} className="nb-chip">
+                  {tech}
+                </li>
+              ))}
+            </ul>
+          </div>
           {(project.repoUrl || project.liveUrl) && (
-            <p className="mt-6 flex flex-wrap gap-2" style={{ "--i": 3 } as CSSProperties}>
+            <p className="mt-8 flex flex-wrap gap-3" style={{ "--i": 3 } as CSSProperties}>
               {project.repoUrl && (
                 <a
                   href={project.repoUrl}
@@ -80,7 +88,9 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
                   rel="noopener noreferrer"
                   className={LINK}
                 >
-                  Código<span className="sr-only"> de {project.name} (abre em nova aba)</span>
+                  Código
+                  <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={2.5} />
+                  <span className="sr-only"> de {project.name} (abre em nova aba)</span>
                 </a>
               )}
               {project.liveUrl && (
@@ -90,7 +100,9 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
                   rel="noopener noreferrer"
                   className={LINK}
                 >
-                  Site no ar<span className="sr-only"> de {project.name} (abre em nova aba)</span>
+                  Site no ar
+                  <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={2.5} />
+                  <span className="sr-only"> de {project.name} (abre em nova aba)</span>
                 </a>
               )}
             </p>

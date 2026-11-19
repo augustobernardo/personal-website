@@ -6,18 +6,19 @@ const AUDIO_BARS = [
   8, 12, 6, 16, 20, 12, 24, 16, 8, 20, 12, 6, 16, 24, 12, 20, 8, 16, 12, 24, 16, 8, 12, 6,
 ];
 const VERDICT_TONES = {
-  pass: { icon: Check, className: "text-accent" },
-  fail: { icon: RotateCcw, className: "text-danger" },
-  warn: { icon: Eye, className: "text-warn" },
+  pass: { icon: Check, className: "bg-ok" },
+  fail: { icon: RotateCcw, className: "bg-bad" },
+  warn: { icon: Eye, className: "bg-warn" },
 };
+const VERDICT_ROTATIONS = ["-rotate-2", "rotate-[1.5deg]", "-rotate-1"];
 
 function ChatVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "chat" }> }) {
   return (
-    <>
-      <div className="mb-4 flex items-center gap-3">
+    <div className="rounded-nb border-3 border-line bg-surface shadow-hard">
+      <div className="flex items-center gap-3 border-b-3 border-line px-4 py-3">
         <span
           aria-hidden="true"
-          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent"
+          className="on-fill flex size-9 shrink-0 items-center justify-center rounded-md border-2 border-line bg-pop-yellow font-mono font-bold"
         >
           {visual.title.slice(0, 1)}
         </span>
@@ -26,12 +27,12 @@ function ChatVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "ch
           <p className="text-sm text-muted">bot</p>
         </div>
       </div>
-      <ol aria-label="Conversa de exemplo" className="in-seq flex flex-col gap-2">
+      <ol aria-label="Conversa de exemplo" className="in-seq flex flex-col gap-3 p-4">
         {visual.messages.map((message, index) => (
           <li
             key={index}
             style={{ "--i": index } as CSSProperties}
-            className={`max-w-[85%] rounded-xl px-3 py-2 text-sm leading-normal break-words ${message.from === "user" ? "self-end bg-chat-out" : "self-start bg-surface"}`}
+            className={`max-w-[85%] rounded-[0.875rem] border-2 border-line px-3 py-2 text-[0.9375rem] leading-normal break-words ${message.from === "user" ? "self-end rounded-br-sm bg-chat-out" : "self-start rounded-bl-sm bg-bg"}`}
           >
             <span className="sr-only">{message.from === "user" ? "Você: " : "Bot: "}</span>
             {message.text}
@@ -41,12 +42,12 @@ function ChatVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "ch
                   Mensagem de áudio de {message.audioSeconds} segundos
                 </span>
                 <span aria-hidden="true" className="inline-flex max-w-full items-center gap-2">
-                  <Play aria-hidden="true" className="size-4 shrink-0" />
+                  <Play aria-hidden="true" className="size-4 shrink-0" strokeWidth={2.5} />
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 96 24"
                     fill="currentColor"
-                    className="h-6 w-24 min-w-0 text-muted"
+                    className="h-6 w-24 min-w-0 text-fg"
                   >
                     {AUDIO_BARS.map((height, bar) => (
                       <rect key={bar} x={bar * 4} y={(24 - height) / 2} width="2" height={height} />
@@ -62,7 +63,7 @@ function ChatVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "ch
           </li>
         ))}
       </ol>
-    </>
+    </div>
   );
 }
 
@@ -70,25 +71,25 @@ function VerdictsVisual({ visual }: { visual: Extract<ProjectVisualData, { kind:
   return (
     <>
       <p className="text-sm text-muted">{visual.intro}</p>
-      <ul className="mt-3 flex flex-wrap gap-2">
-        {visual.verdicts.map(({ label, tone }) => {
+      <ul className="mt-4 flex flex-wrap gap-3">
+        {visual.verdicts.map(({ label, tone }, index) => {
           const { icon: Icon, className } = VERDICT_TONES[tone];
           return (
             <li
               key={label}
-              className={`inline-flex min-h-11 items-center gap-2 rounded bg-surface px-4 text-xl font-semibold ${className}`}
+              className={`nb-sticker on-fill min-h-11 text-[1.125rem] ${VERDICT_ROTATIONS[index % VERDICT_ROTATIONS.length]} ${className}`}
             >
-              <Icon aria-hidden="true" className="size-5" />
+              <Icon aria-hidden="true" className="size-5" strokeWidth={2.5} />
               {label}
             </li>
           );
         })}
       </ul>
-      <dl className="mt-6 grid gap-4 sm:grid-cols-3">
+      <dl className="mt-8 grid gap-3 sm:grid-cols-3">
         {visual.stats.map(({ value, label }) => (
-          <div key={label} className="flex flex-col">
+          <div key={label} className="flex flex-col rounded-nb border-3 border-line bg-surface p-4">
             <dt className="text-sm text-muted">{label}</dt>
-            <dd className="order-first text-2xl font-semibold tabular-nums">{value}</dd>
+            <dd className="order-first type-title tabular-nums">{value}</dd>
           </div>
         ))}
       </dl>
@@ -99,22 +100,18 @@ function VerdictsVisual({ visual }: { visual: Extract<ProjectVisualData, { kind:
 function FlowVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "flow" }> }) {
   return (
     <>
-      <ol className="in-seq flex flex-col gap-3">
+      <ol className="in-seq flex flex-col gap-4">
         {visual.steps.map(({ event, results }, index) => (
           <li
             key={event}
             style={{ "--i": index } as CSSProperties}
             className="grid gap-2 sm:grid-cols-[minmax(0,11rem)_auto_minmax(0,1fr)] sm:items-center"
           >
-            <span className="text-sm font-medium">{event}</span>
-            <ArrowRight aria-hidden="true" className="hidden size-4 text-muted sm:block" />
+            <span className="text-sm font-bold">{event}</span>
+            <ArrowRight aria-hidden="true" className="hidden size-5 sm:block" strokeWidth={2.5} />
             <ul className="flex min-w-0 flex-wrap gap-2">
               {results.map((result) => (
-                <li
-                  key={result}
-                  translate="no"
-                  className="max-w-full rounded bg-surface px-2 py-1 font-mono text-sm break-words"
-                >
+                <li key={result} translate="no" className="nb-chip max-w-full break-words">
                   {result}
                 </li>
               ))}
@@ -122,7 +119,7 @@ function FlowVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "fl
           </li>
         ))}
       </ol>
-      <p className="mt-4 text-sm text-muted">{visual.note}</p>
+      <p className="mt-5 text-[0.875rem] text-muted">{visual.note}</p>
     </>
   );
 }
@@ -130,14 +127,12 @@ function FlowVisual({ visual }: { visual: Extract<ProjectVisualData, { kind: "fl
 export function ProjectVisual({ visual, name }: { visual: ProjectVisualData; name: string }) {
   return (
     <figure aria-label={name}>
-      <div data-ui className="bg-bg p-5 sm:p-8">
+      <div data-ui>
         {visual.kind === "chat" && <ChatVisual visual={visual} />}
         {visual.kind === "verdicts" && <VerdictsVisual visual={visual} />}
         {visual.kind === "flow" && <FlowVisual visual={visual} />}
       </div>
-      <figcaption className="mt-3 text-[length:var(--step-small)] text-muted">
-        {visual.caption}
-      </figcaption>
+      <figcaption className="mt-4 text-[0.875rem] text-muted">{visual.caption}</figcaption>
     </figure>
   );
 }
