@@ -170,7 +170,9 @@ export function HeaderNav({ brand, cta }: Props) {
       data-hidden={hidden && !open}
     >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-[var(--margin)] lg:h-18">
-        {brand}
+        <div className="contents" onClickCapture={() => open && flushSync(() => setOpen(false))}>
+          {brand}
+        </div>
         <nav
           ref={navRef}
           aria-label={site.header.sections}
