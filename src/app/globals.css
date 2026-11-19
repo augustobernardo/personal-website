@@ -270,27 +270,17 @@ p {
   from {
     opacity: 0;
     scale: 1.25;
+    animation-timing-function: var(--ease-in);
   }
-  60% {
+  20% {
     opacity: 1;
+  }
+  55% {
     scale: 1.04 0.96;
+    animation-timing-function: var(--ease-out);
   }
   to {
     scale: 1;
-  }
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    translate: 0 1.5rem;
-  }
-}
-
-@keyframes settle {
-  from {
-    opacity: 0;
-    scale: 0.97;
   }
 }
 
@@ -308,40 +298,27 @@ p {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .in-slap,
-    .in-media,
-    .in-seq > *,
-    .in-word {
-      animation-fill-mode: both;
-      animation-timing-function: linear;
-      animation-timeline: view();
-    }
-
-    .in-slap {
-      animation-name: slap;
-      animation-range: entry 20% entry 60%;
-    }
-
-    .in-media {
-      animation-name: settle;
-      animation-range: entry 10% entry 55%;
-    }
-
-    .in-seq > * {
-      animation-name: rise;
-      animation-range: entry calc(15% + min(var(--i, 0), 6) * 6%) entry
-        calc(55% + min(var(--i, 0), 6) * 6%);
-    }
-
-    .in-word {
-      animation-name: rise;
-      animation-range: entry 0% entry 50%;
-    }
-  }
-
   .stamp-in {
     animation: slap var(--dur-slap) var(--ease-out) both;
+  }
+
+  .hero-slap {
+    animation: slap var(--dur-slap) var(--ease-out) both;
+  }
+
+  .stamp {
+    transition:
+      translate var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out);
+  }
+
+  .stamp[data-state="loading"] {
+    translate: -3px -3px;
+    box-shadow: 11px 11px 0 0 var(--line);
+  }
+
+  .stamp-in .stamp-icon {
+    animation: mark-in var(--dur-base) var(--ease-out) 260ms both;
   }
 
   .check-in {
