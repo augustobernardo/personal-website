@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "skills": {
+    "next-bundle-optimizer": {
+      "source": "vercel/next.js",
+      "ref": "canary",
+      "commit": "a6079ff2a625398e331da66e9e0877ad6030460c",
+      "sourceType": "github",
+      "skillPath": "skills/next-bundle-optimizer/SKILL.md",
+      "computedHash": "2a2d38e9ba5476f6eef7a86cc1531801b454fdcd5ee8b96745973e01b5d25397",
+      "installMode": "copy"
+    },
+    "next-dev-loop": {
+      "source": "vercel/next.js",
+      "ref": "canary",
+      "commit": "a6079ff2a625398e331da66e9e0877ad6030460c",
+      "sourceType": "github",
+      "skillPath": "skills/next-dev-loop/SKILL.md",
+      "computedHash": "abe7b5e77b26f95ab21304b10ce1003a41e4e75b601505d76c8a0294e33a450d",
+      "installMode": "copy"
+    },
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/agent-skills",
+      "commit": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "sourceType": "github",
+      "skillPath": "skills/composition-patterns/SKILL.md",
+      "computedHash": "f711ed8b16162eaa712abbcdbbae6c926f86c57e60127735fecc3ad0dd85b3fa",
+      "installMode": "copy"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "commit": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "computedHash": "7991ed4fbecdac23f47c1a40c243e00a212a9e7f3604db93959b3ae11dffe299",
+      "installMode": "copy"
+    },
+    "writing-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "commit": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "sourceType": "github",
+      "skillPath": "skills/writing-guidelines/SKILL.md",
+      "computedHash": "fe1390adbe2f7ba68d5fb85d3b14a1d55e71ce04cff5c175245c550d1c3a6f7e",
+      "installMode": "copy"
+    }
+  }
+}

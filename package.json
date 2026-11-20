@@ -1,0 +1,43 @@
+{
+  "name": "personal-website",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "pnpm dlx serve@14.2.5 out",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "next typegen && tsc --noEmit",
+    "lint:typed": "eslint . --config eslint.typed.config.mjs",
+    "lint:rules": "node scripts/verify-quality-rules.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm lint:rules"
+  },
+  "dependencies": {
+    "gsap": "3.15.1",
+    "lucide-react": "^1.75.0",
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@lhci/cli": "0.16.1",
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "prettier": "^3.10.1",
+    "tailwindcss": "4.3.3",
+    "typescript": "^5",
+    "vitest": "^5.1.1"
+  },
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=24 <25"
+  }
+}
