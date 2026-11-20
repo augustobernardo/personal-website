@@ -161,3 +161,51 @@ describe("readReport", () => {
     expect(report.hsts.value).toBeNull();
   });
 });
+
+describe("hardened header parsing", () => {
+  const csp = (value: string) => isSecureHeader("content-security-policy", value);
+
+  it("counts received headers separately from secure ones", () => {
+    const headers = new Headers({
+      "content-security-policy": "script-src 'unsafe-inline'",
+      "x-frame-options": "ALLOWALL",
+      "x-content-type-options": "sniff",
+      "referrer-policy": "unsafe-url",
+      "permissions-policy": "camera=*",
+      "cross-origin-opener-policy": "unsafe-none",
+    });
+    const report = readReport((name) => headers.get(name), names, "strict-transport-security");
+    expect(report.present).toBe(0);
+    expect(report.received).toBe(6);
+  });
+
+  it("uses the first occurrence of a repeated CSP directive", () => {
+    const value = "script-src 'unsafe-inline'; script-src 'self'";
+    expect(csp(value)).toBe(false);
+    expect(summarizeCsp(value).unsafeInline).toBe(true);
+  });
+
+  it("treats an empty script-src as none", () => {
+    expect(csp("script-src; object-src 'none'")).toBe(true);
+  });
+
+  it("rejects blob:, unsafe-hashes and wildcard script sources", () => {
+    expect(csp("script-src 'self' blob:")).toBe(false);
+    expect(csp("script-src 'self' https://*")).toBe(false);
+    expect(csp("script-src 'self' *.example.com")).toBe(false);
+    expect(csp("script-src 'self' 'unsafe-hashes'")).toBe(false);
+  });
+
+  it("ignores unknown and empty referrer tokens", () => {
+    const referrer = (value: string) => isSecureHeader("referrer-policy", value);
+    expect(referrer("strict-origin-when-cross-origin, foo")).toBe(true);
+    expect(referrer("no-referrer,")).toBe(true);
+    expect(referrer("foo")).toBe(false);
+  });
+
+  it("requires every permissions entry to disable its feature", () => {
+    const policy = (value: string) => isSecureHeader("permissions-policy", value);
+    expect(policy("camera=(), geolocation=*")).toBe(false);
+    expect(policy(permissions)).toBe(true);
+  });
+});

@@ -75,7 +75,7 @@ function useHeadersState() {
 
 function panelStatus(current: State): string {
   if (current.status !== "done") return security.status[current.status];
-  if (current.report.present === 0) {
+  if (current.report.received === 0) {
     return current.local ? security.status.local : security.status.missing;
   }
   return security.status.active(current.report.present, current.report.total);
@@ -129,7 +129,7 @@ function HeaderLine({
     current.status === "done" &&
     value === null &&
     !hsts &&
-    !(current.local && current.report.present === 0);
+    !(current.local && current.report.received === 0);
   const secure =
     current.status === "done" &&
     (hsts ? current.report.hsts.secure : (current.report.rows[index]?.secure ?? false));
@@ -175,7 +175,7 @@ export function SecurityPanel() {
       ? current.report.rows.find((row) => row.name === "content-security-policy")?.value
       : null;
   const showCommand =
-    current.status === "static" || (current.status === "done" && current.report.present === 0);
+    current.status === "static" || (current.status === "done" && current.report.received === 0);
 
   return (
     <div
@@ -232,8 +232,8 @@ export function SecurityPanel() {
 
 function sealLabel(current: State): string {
   if (current.status !== "done") return security.seal[current.status];
-  const { present, total } = current.report;
-  return present === 0 && current.local
+  const { present, received, total } = current.report;
+  return received === 0 && current.local
     ? security.seal.local
     : security.seal.active(present, total);
 }
@@ -244,7 +244,7 @@ export function SecurityStamp() {
   const partial =
     current.status === "done" &&
     current.report.present < current.report.total &&
-    !(current.local && current.report.present === 0);
+    !(current.local && current.report.received === 0);
   // Static, loading and error share one element so the lift transitions; only a real result remounts and slaps.
   const stateKey = current.status === "done" ? `done-${current.checkedAt}` : "idle";
 
@@ -309,7 +309,7 @@ export function SecurityRecheck() {
 export function SecuritySeal() {
   const current = useHeadersState();
   let tone = "bg-transparent";
-  if (current.status === "done" && !(current.report.present === 0 && current.local)) {
+  if (current.status === "done" && !(current.report.received === 0 && current.local)) {
     const { present, total } = current.report;
     tone = present === total ? "bg-ok" : "bg-bad";
   }
