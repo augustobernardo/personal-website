@@ -6,7 +6,8 @@ import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import assert from "node:assert/strict";
 
-const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+// HTML end tags may carry whitespace or junk before ">" (e.g. "</script >"); match them all.
+const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script\b[^>]*>/gi;
 const ATTR_RE = /([^\s"'=<>/]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
 // JavaScript MIME type essences from the HTML Standard, plus "module".
 const JS_TYPES = new Set([
@@ -78,6 +79,8 @@ function selfTest() {
 <script type="application/javascript">alert(1)</script><script type=" Text/JavaScript; charset=utf-8">alert(1)</script>
 <script data-src="tracking">alert(1)</script><script type="">alert(1)</script><script language="javascript">alert(1)</script>`;
   assert.deepEqual(inlineScriptHashes(executable), Array(7).fill(alert1));
+  const looseEndTags = `<script>alert(1)</script ><script>alert(1)</SCRIPT\t foo>`;
+  assert.deepEqual(inlineScriptHashes(looseEndTags), Array(2).fill(alert1));
   console.log("self-test ok");
 }
 
