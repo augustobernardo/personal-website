@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Cancel superseded pull-request checks; main checks remain available for branch protection.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # pnpm version comes from package.json "packageManager"
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm lint:typed
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm lint:rules
+      # Same build Cloudflare Workers Builds runs: export plus the generated out/_headers (CSP hashes).
+      - run: pnpm build:cloudflare
+      - run: pnpm exec wrangler deploy --dry-run
+        env:
+          WRANGLER_SEND_METRICS: "false"
+      # Reads lighthouserc.json; @lhci/cli is pinned in the lockfile; reports stay on the runner
+      - run: pnpm exec lhci autorun
+      - run: pnpm audit --prod --audit-level high
+
+  secrets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Scan history for secrets
+        run: |
+          img=$(sed -n 's/^FROM //p' .github/tools/gitleaks/Dockerfile)
+          docker run --rm -v "$PWD:/repo" "$img" \
+            git --redact --verbose /repo
+
+  workflows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: actionlint
+        run: |
+          img=$(sed -n 's/^FROM //p' .github/tools/actionlint/Dockerfile)
+          docker run --rm -v "$PWD:/repo" -w /repo "$img" -color
+      - name: zizmor
+        env:
+          # Read-only token: enables the online audits (impostor commits, known-vulnerable actions).
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          img=$(sed -n 's/^FROM //p' .github/tools/zizmor/Dockerfile)
+          docker run --rm -e GH_TOKEN -v "$PWD:/repo:ro" "$img" /repo/.github/workflows
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build the image
+        run: docker build -t personal-website:ci .
+      - name: Scan the image (Trivy)
+        run: |
+          img=$(sed -n 's/^FROM //p' .github/tools/trivy/Dockerfile)
+          docker save personal-website:ci -o "$RUNNER_TEMP/image.tar"
+          docker run --rm -v "$RUNNER_TEMP/image.tar:/in/image.tar:ro" "$img" \
+            image --input /in/image.tar --severity CRITICAL --ignore-unfixed --exit-code 1 --no-progress
+          # Any secret baked into the image fails the build, whatever its severity.
+          docker run --rm -v "$RUNNER_TEMP/image.tar:/in/image.tar:ro" "$img" \
+            image --input /in/image.tar --scanners secret --exit-code 1 --no-progress
+          rm -f "$RUNNER_TEMP/image.tar"

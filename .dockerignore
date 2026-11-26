@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+.git
+.github
+.env*
+coverage
+.lighthouseci
+graphify-out
+.agents
+.claude
+*.md
+Dockerfile
+.dockerignore
