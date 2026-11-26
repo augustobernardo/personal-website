@@ -80,7 +80,7 @@ docker run --rm -p 8080:8080 personal-website
 ## Quality gates (CI)
 
 `.github/workflows/ci.yml` runs on every pull request and every push to `main`. All actions are
-pinned by commit SHA and scanner tool images (`.github/tools/*/Dockerfile`) by digest, with
+pinned by commit SHA and scanner tool images (`tools/ci/*/Dockerfile`) by digest, with
 `permissions: contents: read`.
 
 1. `pnpm install --frozen-lockfile`
@@ -128,8 +128,10 @@ static export. Configure the Worker once in **Workers & Pages â†’ your Worker â†
 The build exports Next.js files to `out/`, generates `out/_headers` with CSP hashes and security
 headers, then Wrangler deploys the directory as static assets. Wrangler returns the exported
 `404.html` with a 404 status for missing paths. No runtime, environment variable or API token is
-needed in application code. Keep the Cloudflare dashboard's generated observability settings in
-`wrangler.jsonc`; logs are enabled, while traces are disabled. Keep issue detection disabled in the Cloudflare dashboard: the pinned Wrangler does not support that key.
+needed in application code. `wrangler.jsonc` turns observability off (no request logs, so no
+visitor IPs are stored) and disables the `*.workers.dev` and per-version preview URLs, so the
+custom domain is the only public origin. In the dashboard, keep **Web Analytics** (automatic
+setup) off: the CSP blocks its beacon and the site promises no analytics.
 
 The existing Docker and nginx files remain for local preview and validation. They are not used in
 production after this migration.
