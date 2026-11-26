@@ -2,23 +2,29 @@
 
 ## Gates
 
-| Check                                                                     | Command                                           | Where                   |
-| ------------------------------------------------------------------------- | ------------------------------------------------- | ----------------------- |
-| Lint (toolkit rules, 350-line ceiling, no `console` in `src/`)            | `pnpm lint`                                       | local, CI               |
-| Type-aware lint (`no-floating-promises`, `no-misused-promises` as errors) | `pnpm lint:typed`                                 | local, CI               |
-| Types                                                                     | `pnpm typecheck` (`next typegen && tsc --noEmit`) | local, CI               |
-| Unit tests (content invariants, date formatting)                          | `pnpm test`                                       | local, CI               |
-| Lint rule self-check                                                      | `pnpm lint:rules`                                 | local, CI               |
-| Build                                                                     | `pnpm build`                                      | local, CI               |
-| CSP script self-test                                                      | `node scripts/csp-hashes.mjs --self-test`         | local                   |
-| Lighthouse ≥ 0.9 per category on `index.html`                             | `pnpm exec lhci autorun`                          | local, CI               |
-| Production dependency audit                                               | `pnpm audit --prod --audit-level high`            | local, CI               |
-| Secrets over full history                                                 | gitleaks                                          | CI; locally before push |
-| Image scan (fixable CRITICAL fails)                                       | Trivy                                             | CI                      |
-| Static analysis                                                           | CodeQL `javascript-typescript`                    | CI, weekly              |
+| Check                                                                     | Command                                                        | Where                   |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------- | ----------------------- |
+| Lint (toolkit rules, 350-line ceiling, no `console` in `src/`)            | `pnpm lint`                                                    | local, CI               |
+| Type-aware lint (`no-floating-promises`, `no-misused-promises` as errors) | `pnpm lint:typed`                                              | local, CI               |
+| Types                                                                     | `pnpm typecheck` (`next typegen && tsc --noEmit`)              | local, CI               |
+| Unit tests (content invariants, date formatting)                          | `pnpm test`                                                    | local, CI               |
+| Lint rule self-check                                                      | `pnpm lint:rules`                                              | local, CI               |
+| Build                                                                     | `pnpm build`                                                   | local, CI               |
+| Cloudflare export + Wrangler validation                                   | `pnpm build:cloudflare && pnpm exec wrangler deploy --dry-run` | local, CI               |
+| CSP script self-test                                                      | `node scripts/csp-hashes.mjs --self-test`                      | local                   |
+| Lighthouse ≥ 0.9 per category on `index.html`                             | `pnpm exec lhci autorun`                                       | local, CI               |
+| Production dependency audit                                               | `pnpm audit --prod --audit-level high`                         | local, CI               |
+| Secrets over full history                                                 | gitleaks                                                       | CI; locally before push |
+| Image scan (fixable CRITICAL fails)                                       | Trivy                                                          | CI                      |
+| Static analysis                                                           | CodeQL `javascript-typescript`                                 | CI, weekly              |
 
 `pnpm check` runs lint, typecheck, test and lint:rules. Neither `check` nor `build` touches the
 network or a database.
+
+Agent guard: `.claude/settings.json` runs `.claude/hooks/config-protection.js` (adapted from
+affaan-m/ecc, MIT, `LICENSE.ecc`) before every Claude Code edit. It blocks changes to an existing
+linter or formatter config (`eslint.config.mjs`, `.prettierrc.json`) so a failing check gets a code
+fix, not a weaker rule. A legitimate config change is made by the owner, or with the hook disabled.
 
 Lighthouse needs Chrome. Locally, point `CHROME_PATH` at a Chrome binary (for example the one
 agent-browser installs under `~/.agent-browser/browsers/`).
@@ -44,7 +50,7 @@ Run against `out/` served on a free port, or against the container.
 
 Specialist: `portfolio-qa-e2e`.
 
-## Container checks
+## Local Docker preview checks
 
 ```bash
 docker build -t personal-website:local .

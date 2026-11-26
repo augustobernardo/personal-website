@@ -1,4 +1,4 @@
-// Usage: node scripts/csp-hashes.mjs <outDir> <destFile> | --self-test
+// Usage: node scripts/csp-hashes.mjs <outDir> <destFile> | <outDir> --cloudflare | --self-test
 // Writes an nginx CSP header with sha256 hashes of every inline executable <script> in the export.
 // Trade-off: style-src keeps 'unsafe-inline' because React/Next emit style= attributes; CSS cannot run JS.
 import { createHash } from "node:crypto";
@@ -50,6 +50,34 @@ function isExecutable(attrs) {
   return essence === "" || JS_TYPES.has(essence);
 }
 
+function contentSecurityPolicy(hashes) {
+  const src = ["'self'", ...hashes.map((h) => `'${h}'`)].join(" ");
+  return `default-src 'self'; script-src ${src}; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests`;
+}
+
+function cloudflareHeaders(csp) {
+  return [
+    "/*",
+    `  Content-Security-Policy: ${csp}`,
+    "  X-Content-Type-Options: nosniff",
+    "  Referrer-Policy: strict-origin-when-cross-origin",
+    "  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), interest-cohort=()",
+    "  X-Frame-Options: DENY",
+    "  Cross-Origin-Opener-Policy: same-origin",
+    "  Cache-Control: no-cache",
+    "",
+    "/_next/static/*",
+    "  ! Cache-Control",
+    "  Cache-Control: public, max-age=31536000, immutable",
+    "",
+    "/opengraph-image",
+    "  ! Cache-Control",
+    "  Cache-Control: public, max-age=3600",
+    "  Content-Type: image/png",
+    "",
+  ].join("\n");
+}
+
 export function inlineScriptHashes(html) {
   const hashes = [];
   for (const [, rawAttrs, body] of html.matchAll(SCRIPT_RE)) {
@@ -81,25 +109,35 @@ function selfTest() {
   assert.deepEqual(inlineScriptHashes(executable), Array(7).fill(alert1));
   const looseEndTags = `<script>alert(1)</script ><script>alert(1)</SCRIPT\t foo>`;
   assert.deepEqual(inlineScriptHashes(looseEndTags), Array(2).fill(alert1));
+  const headers = cloudflareHeaders(contentSecurityPolicy([alert1]));
+  assert.match(headers, /Content-Security-Policy:.*sha256-/);
+  assert.match(headers, /\/_next\/static\/\*\n  ! Cache-Control/);
+  assert.match(
+    headers,
+    /\/opengraph-image\n  ! Cache-Control\n  Cache-Control: public, max-age=3600\n  Content-Type: image\/png/,
+  );
   console.log("self-test ok");
 }
 
-const [a, b] = process.argv.slice(2);
-if (a === "--self-test") selfTest();
-else if (a && b) {
-  const files = htmlFiles(a);
+function exportCsp(outDir) {
+  const files = htmlFiles(outDir);
   if (files.length === 0) {
-    console.error(`no HTML found in ${a}`);
+    console.error(`no HTML found in ${outDir}`);
     process.exit(1);
   }
   const hashes = [
     ...new Set(files.flatMap((f) => inlineScriptHashes(readFileSync(f, "utf8")))),
   ].sort();
-  const src = ["'self'", ...hashes.map((h) => `'${h}'`)].join(" ");
-  const csp = `default-src 'self'; script-src ${src}; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests`;
-  writeFileSync(b, `add_header Content-Security-Policy "${csp}" always;\n`);
   console.log(`${hashes.length} script hashes from ${files.length} HTML files`);
-} else {
-  console.error("usage: csp-hashes.mjs <outDir> <destFile> | --self-test");
+  return contentSecurityPolicy(hashes);
+}
+
+const [a, b] = process.argv.slice(2);
+if (a === "--self-test") selfTest();
+else if (a && b === "--cloudflare")
+  writeFileSync(join(a, "_headers"), cloudflareHeaders(exportCsp(a)));
+else if (a && b) writeFileSync(b, `add_header Content-Security-Policy "${exportCsp(a)}" always;\n`);
+else {
+  console.error("usage: csp-hashes.mjs <outDir> <destFile> | <outDir> --cloudflare | --self-test");
   process.exit(1);
 }

@@ -31,7 +31,7 @@ You are the security auditor for portfolio (augustooliveira.dev.br).
 - **Sistema**: site de portfólio pessoal, uma página, 100% estático (Next.js `output: "export"`) servido por nginx unprivileged atrás do Cloudflare.
 - **Quem acessa**: público anônimo; não há login, admin nem API.
 - **Entradas externas**: só requisições GET de arquivos estáticos; `localStorage` (`theme`) lido pelo script de tema; nenhum formulário, query string processada, upload ou webhook.
-- **Ativos**: reputação do dono e integridade do conteúdo; dado pessoal publicado de propósito (nome, e-mail, cidade, LinkedIn, GitHub, currículo PDF); cadeia de build (CI, imagem, painel Easypanel).
+- **Ativos**: reputação do dono e integridade do conteúdo; dado pessoal publicado de propósito (nome, e-mail, cidade, LinkedIn, GitHub, currículo PDF); cadeia de build (CI, Workers Builds, `out/_headers`).
 <!-- CUSTOM:FIM -->
 
 ## Perfil e módulos ativos
@@ -51,7 +51,7 @@ You are the security auditor for portfolio (augustooliveira.dev.br).
 | M10 Upload e arquivos | não | — |
 | M11 Tempo real (WebSocket/SSE) | não | — |
 | M12 IA/LLM | não | — |
-| M13 Infra, deploy e CI/CD | sim | `Dockerfile`, `nginx.conf`, `.github/workflows/*`, Easypanel, Cloudflare |
+| M13 Infra, deploy e CI/CD | sim | `wrangler.jsonc`, `scripts/csp-hashes.mjs` (`_headers`), `.github/workflows/*`, Cloudflare Workers; `Dockerfile`/`nginx.conf` só para preview local |
 | M14 Supply chain e dependências | sim | `pnpm-lock.yaml`, actions por SHA, imagens por digest, skills em `.agents/skills` |
 | M15 Mobile/desktop nativo | não | — |
 <!-- CUSTOM:FIM -->
@@ -94,7 +94,6 @@ Pesquisado em: 2026-11-19 (primeira auditoria, via security-auditor seguindo est
 |---|---|---|
 | XSS por script inline / CSP fraca | export estático gera scripts inline; relaxar para `unsafe-inline` anula a CSP | `src/app/layout.tsx`, `scripts/csp-hashes.mjs`, `nginx.conf` |
 | Supply chain no CI | actions e imagens de terceiros; incidente do trivy-action em 2026 | `.github/workflows/*`, `Dockerfile`, `.github/dependabot.yml` |
-| Painel de administração exposto | painel do Easypanel hoje no domínio raiz de `gutolabs.com.br` | runbook no `README.md` |
 | Clickjacking / tabnabbing | links externos e embutir em iframe | `X-Frame-Options`, `frame-ancestors`, `rel="noopener noreferrer"` |
 | Vazamento de dado no currículo/metadata | PDF e JSON-LD públicos | `public/`, `src/lib/seo.ts` |
 <!-- CUSTOM:FIM -->

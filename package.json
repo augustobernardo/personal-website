@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:cloudflare": "next build && node scripts/csp-hashes.mjs out --cloudflare",
     "start": "pnpm dlx serve@14.2.5 out",
     "lint": "eslint .",
     "format": "prettier --write .",
@@ -34,7 +35,8 @@
     "prettier": "^3.10.1",
     "tailwindcss": "4.3.3",
     "typescript": "^5",
-    "vitest": "^5.1.1"
+    "vitest": "^5.1.1",
+    "wrangler": "4.164.0"
   },
   "packageManager": "pnpm@12.18.0",
   "engines": {

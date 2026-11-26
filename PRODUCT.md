@@ -44,10 +44,10 @@ Contact form, blog, analytics, cookies, CMS, i18n, any backend or database.
 ## Constraints and technical decisions
 
 - Next.js 16 App Router, TypeScript strict, Tailwind CSS 4, pnpm, Node 24.
-- `output: 'export'`: fully static, served by nginx (unprivileged) in Docker.
+- `output: 'export'`: fully static, served by Cloudflare Workers Static Assets through Wrangler.
 - No persistence: the toolkit default (Drizzle + PostgreSQL, Zod, Pino, server-only)
   is intentionally omitted because the site has no server and no data to store.
-- Hosting: Contabo VPS with Easypanel, Cloudflare proxy (SSL Full Strict, HSTS).
+- Hosting: Cloudflare Workers with static assets and custom domain `augustooliveira.dev.br`.
 
 ## Assumptions and pending decisions
 
@@ -59,16 +59,15 @@ Contact form, blog, analytics, cookies, CMS, i18n, any backend or database.
 
 ## Acceptance criteria
 
-- `pnpm build` produces `out/index.html` with all six sections and no unpublished
-  project.
+- `pnpm build:cloudflare` produces `out/index.html`, the generated `out/_headers`, all six sections, and no unpublished project.
 - Lighthouse CI passes (≥ 90) on the static build; target ≥ 95.
-- Container serves the site on port 8080 as a non-root user with the security headers
-  documented in `nginx.conf`.
+- Wrangler deploys `out/` as Worker static assets, serves `404.html` with status 404, and applies
+  the generated CSP and security headers from `out/_headers`.
 
 ## Next delivery
 
-Add the résumé PDF and project images, fill the pending technical decisions, then
-deploy to Easypanel.
+Add the résumé PDF and project images, fill the pending technical decisions, then deploy the
+connected Worker from the `main` branch.
 
 ## Maintenance
 

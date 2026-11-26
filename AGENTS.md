@@ -6,8 +6,7 @@ Single-page portfolio for augustooliveira.dev.br. Scope: `PRODUCT.md`.
 
 - Stack: Next.js 16.4.6 (App Router, `output: "export"`), React 19.3, TypeScript 5.9 strict,
   Tailwind CSS 4.3, lucide-react, Vitest 5. Node 24 (`.nvmrc`), pnpm 12.18 (`packageManager`).
-- Production: non-root nginx container (official image, uid 101) (`Dockerfile`, `nginx.conf`) on Easypanel behind
-  Cloudflare. No database, no server runtime, no environment variables.
+- Production: Cloudflare Workers Static Assets (`wrangler.jsonc`) serves the Next.js export. The Docker/nginx setup remains for local validation only. No database, server runtime, or app secrets.
 - Setup evidence and decisions: `docs/setup.md`.
 
 ## Canonical commands
@@ -103,7 +102,7 @@ Installing skills does not execute their actions.
 - Security review: project agent `portfolio-security` (read-only), plus the toolkit prompt recorded
   in `docs/quality.md`. Reports stay private.
 - Not adopted: PostgreSQL skills (no database), shadcn (no UI kit), Sentry MCP (no service),
-  Vercel deploy skills (hosting is Easypanel), `gh-fix-ci` (Codex workflow, not configured here).
+  Vercel deploy skills (hosting is Cloudflare Workers), `gh-fix-ci` (Codex workflow, not configured here).
 
 ## Delegation and review
 

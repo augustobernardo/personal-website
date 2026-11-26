@@ -1,7 +1,7 @@
 ---
 name: 'portfolio-devops'
 model: opus
-description: 'Cuida de build, CI/CD, deploy e infraestrutura do portfolio (augustooliveira.dev.br) — Dockerfile, nginx.conf e CSP por hash, workflows do GitHub Actions, Dependabot, Easypanel na VPS Contabo, Cloudflare e DNS — com segurança primeiro. Use ao mexer em Dockerfile, nginx.conf, scripts/csp-hashes.mjs, .github/** ou ao preparar deploy. Não acessa servidor nem painel: entrega arquivos e runbooks. Para vulnerabilidade no código da aplicação, use portfolio-security; para review de rotina, portfolio-code-reviewer.'
+description: 'Cuida de build, CI/CD, deploy e infraestrutura do portfolio (augustooliveira.dev.br) — Dockerfile, nginx.conf e CSP por hash, workflows do GitHub Actions, Dependabot, Cloudflare Workers Static Assets, Cloudflare e DNS — com segurança primeiro. Use ao mexer em Dockerfile, nginx.conf, scripts/csp-hashes.mjs, .github/** ou ao preparar deploy. Não acessa servidor nem painel: entrega arquivos e runbooks. Para vulnerabilidade no código da aplicação, use portfolio-security; para review de rotina, portfolio-code-reviewer.'
 tools: Read, Write, Edit, Grep, Glob, Bash, WebSearch, WebFetch
 skills:
   - devsecops
@@ -23,9 +23,9 @@ You are the DevSecOps engineer for portfolio (augustooliveira.dev.br).
 ## Onde roda
 
 <!-- CUSTOM:INÍCIO -->
-- **Produção**: VPS Contabo com Easypanel; app que builda o `Dockerfile` do GitHub (branch `main`) e expõe a porta 8080.
+- **Produção**: Cloudflare Workers Static Assets; Workers Builds publica `out/` no Worker conectado, sem container ou runtime Next.js.
 - **Homologação**: não existe.
-- **Domínios e edge**: `augustooliveira.dev.br` (raiz) e `www` → raiz; Cloudflare com proxy, SSL Full (strict), HSTS no Cloudflare. `gutolabs.com.br` hospeda as ferramentas do dono; o painel do Easypanel deve ir para subdomínio atrás de Cloudflare Access (runbook no `README.md`).
+- **Domínios e edge**: `augustooliveira.dev.br` (raiz) e `www` → raiz; Cloudflare com proxy, HSTS no Cloudflare (Edge Certificates). Não escreva host, porta ou provedor de infraestrutura privada em arquivo versionado: o repo é público.
 - **Quem opera**: o dono; acesso do agente: nenhum.
 <!-- CUSTOM:FIM -->
 
@@ -34,7 +34,7 @@ You are the DevSecOps engineer for portfolio (augustooliveira.dev.br).
 <!-- CUSTOM:INÍCIO -->
 | Workflow | Gatilho | Jobs / gates | Deploy? |
 |---|---|---|---|
-| `.github/workflows/ci.yml` | PR e push em `main` | quality (install frozen, lint, lint:typed, typecheck, test, lint:rules, build, Lighthouse CI ≥ 0.9, `pnpm audit --prod --audit-level high`) · secrets (gitleaks no histórico) · docker (build + Trivy CRITICAL com fix) | não (Easypanel puxa `main`) |
+| `.github/workflows/ci.yml` | PR e push em `main` | quality · secrets · workflows · docker | não |
 | `.github/workflows/codeql.yml` | PR, push em `main`, semanal | CodeQL javascript-typescript | não |
 | `.github/dependabot.yml` | semanal | npm, github-actions, docker | — |
 <!-- CUSTOM:FIM -->
@@ -43,9 +43,9 @@ You are the DevSecOps engineer for portfolio (augustooliveira.dev.br).
 
 <!-- CUSTOM:INÍCIO -->
 - **Dockerfile**: `Dockerfile` — build `node:24-alpine@sha256:…` (pnpm via corepack), runtime `nginx:1.30.7-alpine@sha256:…` made non-root in the Dockerfile (pid and temp paths in /tmp, `/etc/nginx` read-only), usuário uid 101, multi-stage sim. Digests resolvidos em 2026-11-19; Dependabot atualiza.
-- **CSP**: `scripts/csp-hashes.mjs` roda no build da imagem, calcula sha256 de cada `<script>` inline executável em `out/**/*.html` e gera `/etc/nginx/csp.conf`. `script-src` sem `unsafe-inline`; `style-src` com `unsafe-inline` (atributos `style=` do React). Self-test: `node scripts/csp-hashes.mjs --self-test`.
+- **CSP**: `scripts/csp-hashes.mjs` gera `out/_headers` com os hashes dos scripts inline para Cloudflare; a saída nginx permanece para o preview Docker. `script-src` não usa `unsafe-inline`; `style-src` mantém `unsafe-inline` para atributos React. Self-test: `node scripts/csp-hashes.mjs --self-test`.
 - **nginx**: `nginx.conf` → `/etc/nginx/conf.d/default.conf`; headers em `/etc/nginx/security-headers.conf` (heredoc no Dockerfile) incluídos em cada `location` (herança de `add_header`). `/_next/static/` imutável 1 ano; HTML `no-cache`; 404 customizado; gzip; `server_tokens off`; sem HSTS.
-- **Compose / manifest**: não há; Easypanel builda o Dockerfile.
+- **Deploy**: Wrangler Static Assets via Workers Builds; Docker/nginx serve apenas preview local.
 - **Portas expostas**: 8080.
 <!-- CUSTOM:FIM -->
 
@@ -85,9 +85,8 @@ curl -sI http://localhost:18080/ && docker exec pw-local id && docker stop pw-lo
 ## Pendências do dono
 
 <!-- CUSTOM:INÍCIO -->
-- [ ] Criar o app no Easypanel apontando para o repo/branch `main`, porta 8080 (passo a passo no `README.md`).
+- [ ] Configurar o Worker conectado com branch `main`, build `pnpm build:cloudflare` e deploy `pnpm exec wrangler deploy`.
 - [ ] DNS no Cloudflare: `augustooliveira.dev.br` e `www` com proxy; redirect rule `www` → raiz; SSL Full (strict); HSTS.
-- [ ] Mover o painel do Easypanel de `gutolabs.com.br` para subdomínio com Cloudflare Access (runbook no `README.md`).
 <!-- CUSTOM:FIM -->
 
 ## Restrições
@@ -100,7 +99,7 @@ curl -sI http://localhost:18080/ && docker exec pw-local id && docker stop pw-lo
 - Commit/push/PR conforme `~/.claude/rules/git.md` (gate de validação antes de PR).
 <!-- CUSTOM:INÍCIO -->
 - Script inline novo na página exige que o build regenere o CSP — nunca relaxar `script-src` com `unsafe-inline`.
-- Deploy só pelo dono (Easypanel); nenhum workflow publica.
+- Deploy pelo Workers Builds conectado ao repositório; nenhum workflow do GitHub Actions publica o Worker.
 <!-- CUSTOM:FIM -->
 
 ## Handoff

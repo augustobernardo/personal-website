@@ -36,7 +36,7 @@
 | `vercel-react-best-practices`, `vercel-composition-patterns`, `writing-guidelines`                                             | Applicable web skills                                                                     | project, `--copy`, agents claude-code + codex | `skills@1.9.0`, vercel-labs/agent-skills `1a2c79d`; discovered by Claude Code in this session                                                  |
 | `next-dev-loop`, `next-bundle-optimizer`                                                                                       | Next.js runtime and bundle workflows                                                      | project, `--copy`                             | vercel/next.js canary `a6079ff`; discovered by Claude Code in this session                                                                     |
 | `web-design-guidelines`, `find-skills`                                                                                         | Already global                                                                            | user                                          | not duplicated locally                                                                                                                         |
-| `vercel-optimize`, `deploy-to-vercel`, `vercel-cli-with-tokens`, `vercel-react-view-transitions`, `vercel-react-native-skills` | Not installed                                                                             | —                                             | Hosting is Easypanel, not Vercel; no view transitions requested; not mobile                                                                    |
+| `vercel-optimize`, `deploy-to-vercel`, `vercel-cli-with-tokens`, `vercel-react-view-transitions`, `vercel-react-native-skills` | Not installed                                                                             | —                                             | Hosting is Cloudflare Workers, not Vercel; no view transitions requested; not mobile                                                           |
 | PostgreSQL skills, shadcn, Sentry MCP, `gh-fix-ci`, `differential-review`                                                      | Not installed                                                                             | —                                             | No database, no UI kit, no Sentry service, no Codex CI-repair workflow; security review covered by `portfolio-security` and the toolkit prompt |
 | Third-party skills found with `skills find` (`addyosmani/web-quality-skills@accessibility`, `cloudflare/skills@web-perf`)      | Recommended only                                                                          | —                                             | Owner rule: third-party skills need explicit approval per skill                                                                                |
 | Project subagents (7) in `.claude/agents/`                                                                                     | Adapted from the owner's vault templates                                                  | project                                       | Files present; they load in a new session. Vault pointer notes in `agents_projects/portfolio/`                                                 |
@@ -117,9 +117,21 @@ current design is neobrutalist (`docs/design.md`), with 60-20-10 palettes in bot
 - Owner content: résumé PDF, project images, technical decisions for Superheros API and Romanos
   Oito, and client authorization for the Romanos Oito card (`TODO(augusto)` in
   `src/content/*.ts`).
-- Owner infrastructure: Easypanel app, Cloudflare DNS, SSL and redirect, the panel move with
-  Cloudflare Access, origin firewall restricted to Cloudflare, and GitHub private vulnerability
-  reporting enabled in the repository settings.
+- Owner infrastructure: configure Workers Builds on `main`, set the build/deploy commands, attach the custom domain, and redirect `www` to the canonical host. The private Easypanel panel runbook remains out of scope.
 - First push: confirm `gh pr checks` (or the push run) is green, including Trivy, gitleaks and
   CodeQL.
-- Next MVP task: add the résumé and project images, then deploy to Easypanel.
+- Next MVP task: add the résumé and project images, then deploy through the connected Worker.
+
+## Cloudflare Workers deployment
+
+- Source: [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/) and
+  [Workers static assets](https://developers.cloudflare.com/workers/static-assets/routing/static-site-generation/),
+  accessed 2026-11-25.
+- Decision: keep Next.js `output: "export"`; Wrangler deploys `out/` as static assets, with
+  `404-page` handling and the existing trailing-slash behavior. No Next.js runtime is added.
+- Source: [Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/)
+  and [static asset headers](https://developers.cloudflare.com/workers/static-assets/headers/).
+- Decision: generate CSP hashes after the export into `out/_headers`, preserve security/cache
+  headers, and keep observability issue detection disabled in the dashboard, since Wrangler 4.168.0 rejects that key.
+- Workers Builds uses `pnpm build:cloudflare` and `pnpm exec wrangler deploy`; its Worker name
+  must match `wrangler.jsonc`. GitHub Actions no longer publishes a GHCR image or calls Easypanel.
