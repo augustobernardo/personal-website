@@ -9,7 +9,7 @@ export function Contact() {
   const [local, domain] = profile.email.split("@");
 
   return (
-    <div className="fill-band bg-pop-blue border-t-3 border-line">
+    <div className="fill-band border-t-3 border-line">
       <Section
         id="contato"
         title="Contato"

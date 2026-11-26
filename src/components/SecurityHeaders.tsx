@@ -146,24 +146,32 @@ function HeaderLine({
 
   return (
     <div
-      className={`grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-2 py-4 ${current.status === "done" ? "check-in" : ""} ${hsts ? "mt-0 border-t-3 border-line" : ""}`}
+      className={`grid grid-cols-1 items-start gap-x-3 gap-y-2 py-4 sm:grid-cols-[minmax(0,1fr)_auto] ${current.status === "done" ? "check-in" : ""} ${hsts ? "mt-0 border-t-3 border-line" : ""}`}
       style={{ "--i": index } as CSSProperties}
     >
-      <dt translate="no" className="min-w-0 break-all font-mono text-[0.875rem] font-bold">
+      <dt
+        translate="no"
+        className="min-w-0 [overflow-wrap:anywhere] font-mono text-[0.875rem] font-bold"
+      >
         {header.name}
       </dt>
-      <dd className={`nb-sticker on-fill !shadow-none px-2.5 py-1 ${fill}`}>
+      <dd
+        className={`nb-sticker on-fill justify-self-start !shadow-none px-2.5 py-1 sm:justify-self-auto ${fill}`}
+      >
         <Mark aria-hidden="true" strokeWidth={3} className="mark size-4" />
         {label}
       </dd>
       {value !== null ? (
-        <dd translate="no" className="col-span-2 break-words font-mono text-[0.875rem] text-muted">
+        <dd
+          translate="no"
+          className="sm:col-span-2 break-words font-mono text-[0.875rem] text-muted"
+        >
           <HeaderValue name={header.name} value={value} />
         </dd>
       ) : hsts && current.status === "done" ? (
-        <dd className="col-span-2 text-[0.875rem] text-muted">{security.summary.hstsMissing}</dd>
+        <dd className="sm:col-span-2 text-[0.875rem] text-muted">{security.summary.hstsMissing}</dd>
       ) : null}
-      <dd className="col-span-2 text-[0.9375rem]">{header.explain}</dd>
+      <dd className="sm:col-span-2 text-[length:var(--step-body)]">{header.explain}</dd>
     </div>
   );
 }
@@ -267,7 +275,7 @@ export function SecurityStamp() {
         className="stamp-icon absolute right-4 top-4 size-8"
       />
       <div className="relative">
-        <p className="font-mono text-[0.875rem] font-bold">{security.stamp.title}</p>
+        <p className="pr-10 text-[0.875rem] font-bold">{security.stamp.title}</p>
         <p className="type-title mt-3 tabular-nums">{sealLabel(current)}</p>
         {current.status === "done" ? (
           <p className="mt-2 text-[0.875rem]">
@@ -294,8 +302,7 @@ export function SecurityRecheck() {
       type="button"
       aria-disabled={current.status === "loading"}
       onClick={current.status === "loading" ? undefined : () => void check()}
-      style={{ "--i": 3 } as CSSProperties}
-      className="nb-btn nb-btn--primary min-h-14 w-full text-[1.125rem] lg:col-span-5 lg:col-start-1 lg:row-start-4 lg:self-start"
+      className="nb-btn nb-btn--primary min-h-14 w-full text-[1.125rem] lg:col-span-7 lg:col-start-6 lg:row-start-2 lg:w-auto lg:justify-self-start"
     >
       <RefreshCw
         aria-hidden="true"

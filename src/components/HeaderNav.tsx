@@ -8,7 +8,6 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  useSyncExternalStore,
 } from "react";
 import { flushSync } from "react-dom";
 import { site } from "@/content/site";
@@ -20,22 +19,14 @@ const DESKTOP = "(min-width: 1024px)";
 const MOTION_OK = "(prefers-reduced-motion: no-preference)";
 const FOCUSABLE = "a[href], button:not([disabled])";
 
-const noopSubscribe = () => () => {};
-
 const LINK_BASE =
   "inline-flex min-h-11 items-center rounded-nb border-2 px-3 text-[1rem] font-bold";
 
 export function HeaderNav({ brand, cta }: Props) {
-  // The button exists only after hydration; its slot is always there, so nothing shifts and no dead button renders without JS.
-  const mounted = useSyncExternalStore(
-    noopSubscribe,
-    () => true,
-    () => false,
-  );
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [active, setActive] = useState<string | null>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const buttonRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
   const [pill, setPill] = useState({ x: 0, width: 0 });
@@ -54,21 +45,22 @@ export function HeaderNav({ brand, cta }: Props) {
     return () => observer.disconnect();
   }, [active]);
 
-  // Layout effect: inert and scroll lock must be gone before the browser follows an anchor.
+  // Layout effect: inert must be gone before the browser follows an anchor.
   useLayoutEffect(() => {
     if (!open) return;
     const inerted = ["conteudo", "rodape"].flatMap((id) => document.getElementById(id) ?? []);
     inerted.forEach((el) => el.setAttribute("inert", ""));
-    document.documentElement.dataset.menu = "open";
     return () => {
       inerted.forEach((el) => el.removeAttribute("inert"));
-      delete document.documentElement.dataset.menu;
     };
   }, [open]);
 
   useEffect(() => {
     if (!open) return;
-    panelRef.current?.querySelector<HTMLElement>("a")?.focus();
+    // Next frame: during the details toggle Chrome ignores focus() into the just-opened content.
+    const frame = requestAnimationFrame(() =>
+      panelRef.current?.querySelector<HTMLElement>("a")?.focus(),
+    );
 
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -101,6 +93,7 @@ export function HeaderNav({ brand, cta }: Props) {
     document.addEventListener("keydown", onKey);
     wide.addEventListener("change", onWide);
     return () => {
+      cancelAnimationFrame(frame);
       document.removeEventListener("keydown", onKey);
       wide.removeEventListener("change", onWide);
     };
@@ -164,11 +157,7 @@ export function HeaderNav({ brand, cta }: Props) {
   }
 
   return (
-    <header
-      className="site-header border-b-3 border-line bg-bg"
-      data-open={open}
-      data-hidden={hidden && !open}
-    >
+    <header className="site-header border-b-3 border-line bg-bg" data-hidden={hidden && !open}>
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-[var(--margin)] lg:h-18">
         <div className="contents" onClickCapture={() => open && flushSync(() => setOpen(false))}>
           {brand}
@@ -181,7 +170,7 @@ export function HeaderNav({ brand, cta }: Props) {
           {/* One shared pill slides to the active link, so a section change reads as movement. */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-0 h-11 rounded-nb border-2 border-line bg-pop-blue motion-safe:transition-[transform,width,opacity] motion-safe:duration-[260ms] motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]"
+            className="pointer-events-none absolute top-1/2 left-0 h-11 rounded-nb border-2 border-line bg-pop-blue motion-safe:transition-[transform,width,opacity] motion-safe:duration-(--dur-base) motion-safe:ease-(--ease-out)"
             style={{
               width: pill.width,
               transform: `translate(${pill.x}px, -50%)`,
@@ -194,8 +183,8 @@ export function HeaderNav({ brand, cta }: Props) {
               href={`#${id}`}
               data-nav={id}
               aria-current={active === id ? "true" : undefined}
-              className={`${LINK_BASE} relative border-transparent decoration-3 underline-offset-[6px] motion-safe:transition-colors motion-safe:duration-[260ms] ${
-                active === id ? "on-fill" : "hover:underline"
+              className={`${LINK_BASE} relative border-transparent motion-safe:transition-colors motion-safe:duration-(--dur-base) ${
+                active === id ? "on-fill" : "hover:border-line"
               }`}
             >
               {label}
@@ -205,71 +194,57 @@ export function HeaderNav({ brand, cta }: Props) {
         <div className="ml-auto flex items-center gap-3 lg:ml-0">
           <ThemeToggle />
           <div className="hidden sm:block">{cta}</div>
-          <div className="size-11 lg:hidden">
-            {mounted && (
-              <button
-                ref={buttonRef}
-                type="button"
-                aria-expanded={open}
-                aria-controls="menu-principal"
-                aria-label={site.header.menu}
-                onClick={() => setOpen((value) => !value)}
-                className="nb-btn nb-btn--secondary menu-toggle size-11 px-0"
-              >
-                <span className="menu-icon" aria-hidden="true">
-                  <span />
-                  <span />
-                  <span />
-                </span>
-              </button>
-            )}
-          </div>
+          {/* Native details: opens without JavaScript and renders on the server, so hydration shifts nothing. */}
+          <details
+            className="menu size-11 lg:hidden"
+            open={open}
+            onToggle={(event) => setOpen(event.currentTarget.open)}
+          >
+            <summary
+              ref={buttonRef}
+              aria-label={site.header.menu}
+              className="nb-btn nb-btn--secondary menu-toggle size-11 list-none px-0 [&::-webkit-details-marker]:hidden"
+            >
+              <span className="menu-icon" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
+            </summary>
+            <div
+              className="menu-scrim fixed inset-x-0 bottom-0 top-[calc(4rem+3px)]"
+              style={{ background: "var(--scrim)" }}
+              onClick={closeAndFocusButton}
+              aria-hidden="true"
+            />
+            <div
+              id="menu-principal"
+              ref={panelRef}
+              className="menu-panel absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-b-3 border-line bg-surface shadow-[0_6px_0_0_var(--line)]"
+            >
+              <nav aria-label={site.header.sections}>
+                <ul>
+                  {site.nav.map(({ id, label }, index) => (
+                    <li key={id} style={{ "--i": index } as CSSProperties}>
+                      <a
+                        href={`#${id}`}
+                        aria-current={active === id ? "true" : undefined}
+                        onClick={() => flushSync(() => setOpen(false))}
+                        className={`wide flex min-h-14 items-center justify-between border-b-2 border-line px-[var(--margin)] font-extrabold text-[length:var(--step-title)] ${
+                          active === id ? "on-fill bg-pop-blue" : ""
+                        }`}
+                      >
+                        {label}
+                        <ArrowRight aria-hidden="true" strokeWidth={2.5} className="size-5" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+              <div className="p-[var(--margin)] sm:hidden [&>a]:w-full">{cta}</div>
+            </div>
+          </details>
         </div>
-      </div>
-      {/* Plain links until hydration succeeds: covers no-JS and a bundle that fails to load. */}
-      {!mounted && (
-        <nav
-          aria-label={site.header.sections}
-          className="mx-auto flex max-w-7xl flex-wrap gap-x-5 px-[var(--margin)] pb-2 lg:hidden"
-        >
-          {site.nav.map(({ id, label }) => (
-            <a key={id} href={`#${id}`} className="inline-flex min-h-11 items-center font-bold">
-              {label}
-            </a>
-          ))}
-        </nav>
-      )}
-      <div
-        className="menu-scrim fixed inset-x-0 bottom-0 top-[calc(4rem+3px)] lg:hidden"
-        style={{ background: "var(--scrim)" }}
-        onClick={closeAndFocusButton}
-        aria-hidden="true"
-      />
-      <div
-        id="menu-principal"
-        ref={panelRef}
-        className="menu-panel absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-b-3 border-line bg-surface shadow-[0_6px_0_0_var(--line)] lg:hidden"
-      >
-        <nav aria-label={site.header.sections}>
-          <ul>
-            {site.nav.map(({ id, label }, index) => (
-              <li key={id} style={{ "--i": index } as CSSProperties}>
-                <a
-                  href={`#${id}`}
-                  aria-current={active === id ? "true" : undefined}
-                  onClick={() => flushSync(() => setOpen(false))}
-                  className={`wide flex min-h-14 items-center justify-between border-b-2 border-line px-[var(--margin)] font-extrabold text-[length:var(--step-title)] ${
-                    active === id ? "on-fill bg-pop-blue" : ""
-                  }`}
-                >
-                  {label}
-                  <ArrowRight aria-hidden="true" strokeWidth={2.5} className="size-5" />
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="p-[var(--margin)] sm:hidden [&>a]:w-full">{cta}</div>
       </div>
     </header>
   );

@@ -28,9 +28,10 @@ Não cobre: implementar a lógica do componente (→ `portfolio-frontend`, depoi
 ## Design system deste projeto
 
 <!-- CUSTOM:INÍCIO -->
-- **Tokens**: `src/app/globals.css` — paleta stone + acento azul (`#1d4ed8` claro, `#60a5fa` escuro), fundo `#fafaf9`/`#0c0a09`; todos os pares de texto ≥ 4.5:1 (medidos em `docs/design.md`). Fonte Geist via `next/font`.
+- **Direção**: neobrutalismo (escolha do dono, 2026-11-19). Fonte de verdade: `docs/design.md`.
+- **Tokens**: `src/app/globals.css` — papel `--bg #F7F3EA`/`#16130E`, `--surface`, tinta `--fg`/`--line`, secundário `--pop-blue #8CB4FF`, acento `--pop-yellow #FFD23F`, estados `--ok`/`--warn`/`--bad`; proporção 60-20-10 + tinta; contrastes medidos em `docs/design.md`. Fontes Archivo (variável) e Space Mono via `next/font`.
 - **Referência canônica**: a seção Hero (`src/components/Hero.tsx`) — toda seção nova se alinha a ela.
-- **Componentes compartilhados** que não podem ser reimplementados: `Section`, `ProjectCard`, `ThemeToggle`, `Header`, `Footer`.
+- **Componentes compartilhados** que não podem ser reimplementados: `Section`, `ProjectCard`, `ThemeToggle`, `Header`, `Footer`, `SecurityHeaders` (`SecurityStamp`, `SecurityPanel`, `SecurityRecheck`).
 - **Breakpoints**: Tailwind padrão (`sm` 640, `md` 768, `lg` 1024); validado de 320 a 1440 px.
 - **Público**: recrutadores e gestores de tecnologia no Brasil, muitos no celular; objetivo é entender quem é, o que faz, projetos e contato em 60 s.
 <!-- CUSTOM:FIM -->

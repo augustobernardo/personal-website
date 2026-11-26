@@ -36,15 +36,15 @@
 }
 
 :root[data-theme="dark"] {
-  --bg: #16130e;
-  --surface: #262119;
-  --fg: #f7eedc;
-  --muted: #c2b8a6;
-  --line: #f7eedc;
-  --focus: #f7eedc;
-  --dot: rgb(247 238 220 / 0.09);
-  --chat-out: #24412f;
-  --tint: #1d2638;
+  --bg: #121212;
+  --surface: #1f1f1f;
+  --fg: #f2f2f2;
+  --muted: #b8b8b8;
+  --line: #f2f2f2;
+  --focus: #f2f2f2;
+  --dot: rgb(242 242 242 / 0.09);
+  --chat-out: #1f3a2a;
+  --tint: #1c2638;
   --scrim: rgb(0 0 0 / 0.6);
 }
 
@@ -101,6 +101,11 @@ body {
   outline-offset: 3px;
 }
 
+::selection {
+  background: var(--pop-yellow);
+  color: var(--ink);
+}
+
 h2,
 h3 {
   text-wrap: balance;
@@ -118,9 +123,17 @@ p {
 }
 
 .fill-band {
+  background: var(--pop-blue);
   color: var(--ink);
   --focus: var(--ink);
   --line: var(--ink);
+}
+
+:root[data-theme="dark"] .fill-band {
+  background: var(--tint);
+  color: var(--fg);
+  --focus: var(--fg);
+  --line: var(--fg);
 }
 
 .inverse {
@@ -169,7 +182,6 @@ p {
   .nb-btn--primary {
     background: var(--pop-yellow);
     color: var(--ink);
-    --focus: var(--ink);
   }
 
   .nb-btn--secondary {
@@ -278,8 +290,10 @@ p {
   translate: none;
 }
 
-html[data-menu="open"] {
-  overflow: hidden;
+@media (width < 64rem) {
+  html:has(.menu[open]) {
+    overflow: hidden;
+  }
 }
 
 .menu-icon {
@@ -305,22 +319,21 @@ html[data-menu="open"] {
   translate: 0 6px;
 }
 
-.menu-toggle[aria-expanded="true"] {
+.menu[open] > .menu-toggle {
   background: var(--pop-blue);
   color: var(--ink);
-  --focus: var(--ink);
 }
 
-.menu-toggle[aria-expanded="true"] .menu-icon > span:nth-child(1) {
+.menu[open] > .menu-toggle .menu-icon > span:nth-child(1) {
   translate: 0 0;
   rotate: 45deg;
 }
 
-.menu-toggle[aria-expanded="true"] .menu-icon > span:nth-child(2) {
+.menu[open] > .menu-toggle .menu-icon > span:nth-child(2) {
   scale: 0 1;
 }
 
-.menu-toggle[aria-expanded="true"] .menu-icon > span:nth-child(3) {
+.menu[open] > .menu-toggle .menu-icon > span:nth-child(3) {
   translate: 0 0;
   rotate: -45deg;
 }
@@ -340,14 +353,14 @@ html[data-menu="open"] {
   translate: 0 0.5rem;
 }
 
-[data-open="true"] > .menu-panel,
-[data-open="true"] > .menu-scrim {
+.menu[open] > .menu-panel,
+.menu[open] > .menu-scrim {
   visibility: visible;
   opacity: 1;
   translate: 0 0;
 }
 
-[data-open="true"] > .menu-panel li {
+.menu[open] > .menu-panel li {
   opacity: 1;
   translate: 0 0;
 }
@@ -385,10 +398,6 @@ html[data-menu="open"] {
 
 @media (prefers-reduced-motion: no-preference) {
   .stamp-in {
-    animation: slap var(--dur-slap) var(--ease-out) both;
-  }
-
-  .hero-slap {
     animation: slap var(--dur-slap) var(--ease-out) both;
   }
 
@@ -453,19 +462,19 @@ html[data-menu="open"] {
       scale var(--dur-fast) var(--ease-in);
   }
 
-  .menu-toggle[aria-expanded="true"] .menu-icon > span {
+  .menu[open] > .menu-toggle .menu-icon > span {
     transition-duration: var(--dur-base);
     transition-timing-function: var(--ease-out);
     transition-delay: 40ms;
   }
 
-  .menu-toggle[aria-expanded="true"] .menu-icon > span:nth-child(2) {
+  .menu[open] > .menu-toggle .menu-icon > span:nth-child(2) {
     transition-duration: var(--dur-fast);
     transition-delay: 0ms;
   }
 
   @media (hover: hover) {
-    .menu-toggle[aria-expanded="false"]:hover .menu-icon > span:nth-child(2) {
+    .menu:not([open]) > .menu-toggle:hover .menu-icon > span:nth-child(2) {
       scale: 0.6 1;
       transform-origin: right;
     }
@@ -480,17 +489,37 @@ html[data-menu="open"] {
       visibility 0s linear var(--dur-fast);
   }
 
-  [data-open="true"] > .menu-panel,
-  [data-open="true"] > .menu-scrim,
-  [data-open="true"] > .menu-panel li {
+  .menu[open] > .menu-panel,
+  .menu[open] > .menu-scrim,
+  .menu[open] > .menu-panel li {
     transition:
       opacity var(--dur-base) var(--ease-out),
       translate var(--dur-base) var(--ease-out),
       visibility 0s;
   }
 
-  [data-open="true"] > .menu-panel li {
+  .menu[open] > .menu-panel li {
     transition-delay: calc(var(--i, 0) * 30ms);
+  }
+
+  /* Content of a just-opened details was not rendered, so the enter needs a starting style. */
+  @starting-style {
+    .menu[open] > .menu-panel {
+      opacity: 0;
+      translate: 0 -0.5rem;
+    }
+    .menu[open] > .menu-scrim {
+      opacity: 0;
+    }
+    .menu[open] > .menu-panel li {
+      opacity: 0;
+      translate: 0 0.5rem;
+    }
+  }
+
+  /* Keeps the closing details rendered for the exit transition where ::details-content is supported. */
+  .menu::details-content {
+    transition: content-visibility var(--dur-fast) allow-discrete;
   }
 }
 

@@ -58,8 +58,10 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
           </p>
           {project.decisions.length > 0 && (
             <div className="mt-8" style={{ "--i": 1 } as CSSProperties}>
-              <h4 className="nb-chip on-fill bg-pop-blue">Decisões técnicas</h4>
-              <ul className="list-square mt-4 space-y-2 text-[length:var(--step-body)]">
+              <h4 className="semi-wide text-[length:var(--step-body)] font-extrabold">
+                Decisões técnicas
+              </h4>
+              <ul className="list-square mt-3 space-y-2 text-[length:var(--step-body)]">
                 {project.decisions.map((decision) => (
                   <li key={decision}>{decision}</li>
                 ))}

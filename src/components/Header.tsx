@@ -11,7 +11,7 @@ export function Header() {
     <a
       href="#conteudo"
       aria-label={site.header.home}
-      className="wide inline-flex size-11 items-center justify-center rounded-nb border-3 border-line bg-fg text-[1rem] font-black text-bg shadow-hard-sm"
+      className="wide inline-flex size-11 items-center justify-center rounded-nb border-3 border-line bg-surface text-[1rem] font-black text-fg shadow-hard-sm"
     >
       {site.header.monogram}
     </a>

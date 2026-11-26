@@ -27,22 +27,24 @@ Style rules:
   rounding.
 - Stickers and status marks are rotated 1–2.5°. Cards, text and grids are never rotated.
 - Paper texture: a 22 px dot grid on the page background.
-- Monospace (Space Mono) for chips, stickers, labels and the `data-ui` fragments. Labels are
-  sentence case, never all caps.
-- One column of sections, no sidebar. Only the header sticks to the viewport.
+- Monospace (Space Mono) only for data: technology chips, period chips, status and verdict
+  stickers, header names and the `data-ui` fragments. Labels and running text use Archivo.
+  Labels are sentence case, never all caps.
+- One column of sections, no sidebar. Only the header sticks to the viewport; from 1024 px the
+  Experience career arc and the Security left column are sticky inside their sections.
 
 ## Page structure
 
-| Order | Section            | Composition                                                                           |
-| ----- | ------------------ | ------------------------------------------------------------------------------------- |
-| 1     | Header             | Sticky paper bar, 3 px bottom rule: ink "AO" block, five links or menu, theme, action |
-| 2     | Hero + `#sobre`    | Bento: name card, live sticker, facts card, blue About band                           |
-| 3     | `#projetos`        | One outlined card per project: blue title strip, status sticker, fragment, proof      |
-| 4     | `#experiencia`     | Heading and career-arc chips beside role cards; the current role has a yellow strip   |
-| 5     | `#seguranca`       | Inverse band: fact stickers, heading, intro, recheck button; live panel card          |
-| 6     | `#stack`           | Six group cards in a grid, coloured header strips, technologies as chips              |
-| 7     | `#contato`         | Blue band: heading, lead, the e-mail as a large yellow pressable card, links          |
-| 8     | Footer (`#rodape`) | Inverse band: name, live seal, back-to-top button, imprint                            |
+| Order | Section            | Composition                                                                            |
+| ----- | ------------------ | -------------------------------------------------------------------------------------- |
+| 1     | Header             | Sticky paper bar, 3 px bottom rule: ink "AO" block, five links or menu, theme, action  |
+| 2     | Hero + `#sobre`    | Bento: name card, live sticker, facts strip, blue About band                           |
+| 3     | `#projetos`        | One outlined card per project: blue title strip, status sticker, fragment, proof       |
+| 4     | `#experiencia`     | Heading and career-arc chips beside role cards; the current role has a yellow strip    |
+| 5     | `#seguranca`       | Inverse band: sticky column (fact stickers, heading, intro); live panel, recheck below |
+| 6     | `#stack`           | One outlined block, one row per group: group name beside its technology chips          |
+| 7     | `#contato`         | Blue band (deep tint in dark): heading, lead, the e-mail as a yellow card, links       |
+| 8     | Footer (`#rodape`) | Inverse band: name, live seal, back-to-top button, imprint                             |
 
 Full-bleed sections are bands separated by a 3 px rule; content sits in a 1280 px container with
 `--margin` gutters. Bands use 64 px vertical padding below 1024 px and 96 px from 1024 px. Cards are
@@ -54,15 +56,15 @@ Light is the default: light values live on `:root`, dark values on `:root[data-t
 
 | Token        | Light                  | Dark                      | Use                                      |
 | ------------ | ---------------------- | ------------------------- | ---------------------------------------- |
-| `--bg`       | `#F7F3EA`              | `#16130E`                 | Paper; text on inverse bands             |
-| `--surface`  | `#FFFFFF`              | `#262119`                 | Cards, secondary buttons, chips          |
-| `--fg`       | `#111111`              | `#F7EEDC`                 | Text; inverse band fill                  |
-| `--muted`    | `#4D4A44`              | `#C2B8A6`                 | Labels, captions (never on a fill)       |
-| `--line`     | `#111111`              | `#F7EEDC`                 | Every outline and hard shadow            |
-| `--focus`    | `#111111`              | `#F7EEDC`                 | Focus outline                            |
-| `--dot`      | `rgb(17 17 17 / 0.13)` | `rgb(247 238 220 / 0.09)` | Dot-grid texture (decorative)            |
-| `--tint`     | `#DCE6FB`              | `#1D2638`                 | Soft secondary: project fragment stage   |
-| `--chat-out` | `#D9F5E3`              | `#24412F`                 | Outgoing chat bubble                     |
+| `--bg`       | `#F7F3EA`              | `#121212`                 | Paper; text on inverse bands             |
+| `--surface`  | `#FFFFFF`              | `#1F1F1F`                 | Cards, secondary buttons, chips          |
+| `--fg`       | `#111111`              | `#F2F2F2`                 | Text; inverse band fill                  |
+| `--muted`    | `#4D4A44`              | `#B8B8B8`                 | Labels, captions (never on a fill)       |
+| `--line`     | `#111111`              | `#F2F2F2`                 | Every outline and hard shadow            |
+| `--focus`    | `#111111`              | `#F2F2F2`                 | Focus outline                            |
+| `--dot`      | `rgb(17 17 17 / 0.13)` | `rgb(242 242 242 / 0.09)` | Dot-grid texture (decorative)            |
+| `--tint`     | `#DCE6FB`              | `#1C2638`                 | Soft secondary: project fragment stage   |
+| `--chat-out` | `#D9F5E3`              | `#1F3A2A`                 | Outgoing chat bubble                     |
 | `--scrim`    | `rgb(17 17 17 / 0.45)` | `rgb(0 0 0 / 0.6)`        | Behind the open mobile menu (decorative) |
 
 Constant in both themes:
@@ -97,8 +99,14 @@ decoration. Measured before the change (nine 1440 px light screenshots): paper 3
 largest hue and no secondary existed. Target after: dominant 55–62 %, secondary 17–23 %, accent plus
 states about 10 %, ink 14–17 %.
 
+Measured on 2026-11-24 (filled area at 1440 px, light): paper and surface 63.6 %, blue 11.9 %,
+tint 8.3 %, ink fills 13.8 %, yellow 2.0 %, states 0.3 %. Text selection uses `--pop-yellow` with
+ink text (`::selection`) in both themes.
+
 Context classes change `--line` and `--focus` locally: `.on-fill` (ink text and focus on a fill),
-`.fill-band` (also ink outlines, for the contact band), `.inverse` (band filled with `--fg`, text,
+`.fill-band` (the contact band: `--pop-blue` fill with ink text, outlines and focus in light;
+`--tint` fill with `--fg` text, outlines and focus in dark, so the dark page has no full-width
+light field and the yellow e-mail card is the only bright shape in the section), `.inverse` (band filled with `--fg`, text,
 outlines and focus in `--bg`), `.on-panel` (a surface card inside an inverse band).
 
 Shape and depth: outline 3 px (blocks) or 2 px (small parts); radius `--radius-nb` 8 px; hard
@@ -107,7 +115,7 @@ shadows 3 px (stickers), 4 px (buttons at rest), 6 px (button hover; cards below
 
 Shared component classes: `.nb-card`, `.nb-btn` with `--primary` (yellow) and `--secondary`
 (surface), `.nb-chip`, `.nb-sticker`, `.list-square`, `.type-display`, `.type-head`, `.type-title`,
-`.wide`, `.semi-wide`; navigation: `.site-header`, `.menu-toggle`, `.menu-icon`, `.menu-panel`,
+`.wide`, `.semi-wide`; navigation: `.site-header`, `.menu`, `.menu-toggle`, `.menu-icon`, `.menu-panel`,
 `.menu-scrim`.
 
 Motion tokens: `--ease-out: cubic-bezier(0.2, 0, 0, 1)`, `--ease-in: cubic-bezier(0.3, 0, 1, 1)`,
@@ -134,19 +142,21 @@ project result 40ch. Comparable numbers use `tabular-nums`.
 
 ## Contrast (WCAG 2.x)
 
-Measured with the WCAG 2.x relative-luminance formula (2026-11-19). Text needs 4.5:1, outlines and
+Measured with the WCAG 2.x relative-luminance formula (light 2026-11-19, dark 2026-11-25). Text needs 4.5:1, outlines and
 focus 3:1.
 
-| Pair                                          | Light                         | Dark                         |
-| --------------------------------------------- | ----------------------------- | ---------------------------- |
-| fg / bg · surface · tint · chat-out           | 17.05 · 18.88 · 15.07 · 16.29 | 16.07 · 13.86 · 13.14 · 9.73 |
-| muted / bg · surface · tint · chat-out        | 7.97 · 8.83 · 7.04 · 7.62     | 9.44 · 8.14 · 7.72 · 5.72    |
-| Inverse band: bg on fg                        | 17.05                         | 16.07                        |
-| Outline and focus: line / bg · surface · tint | 17.05 · 18.88 · 15.07         | 16.07 · 13.86 · 13.14        |
-| ink / pop-yellow · pop-blue · white           | 13.08 · 9.07 · 18.88          | same                         |
-| ink / ok · warn · bad                         | 10.29 · 8.33 · 6.80           | same                         |
+| Pair                                          | Light                         | Dark                          |
+| --------------------------------------------- | ----------------------------- | ----------------------------- |
+| fg / bg · surface · tint · chat-out           | 17.05 · 18.88 · 15.07 · 16.29 | 16.73 · 14.72 · 13.56 · 11.05 |
+| muted / bg · surface · tint · chat-out        | 7.97 · 8.83 · 7.04 · 7.62     | 9.44 · 8.31 · 7.65 · 6.24     |
+| Inverse band: bg on fg                        | 17.05                         | 16.73                         |
+| Outline and focus: line / bg · surface · tint | 17.05 · 18.88 · 15.07         | 16.73 · 14.72 · 13.56         |
+| ink / pop-yellow · pop-blue · white           | 13.08 · 9.07 · 18.88          | same                          |
+| ink / ok · warn · bad                         | 10.29 · 8.33 · 6.80           | same                          |
+| Contact band (dark): fg · line / tint         | —                             | 13.56 · 13.56                 |
+| Selection: ink / pop-yellow                   | 13.08                         | 13.08                         |
 
-Lowest text pair: 7.04 light, 5.72 dark. Fills against the light paper measure 1.3–2.6:1, so no fill
+Lowest text pair: 7.04 light, 6.24 dark. Fills against the light paper measure 1.3–2.6:1, so no fill
 stands alone: every filled shape has an outline of at least 13:1. `--muted` never sits on a fill. Colour never carries meaning alone:
 verdicts, header states and project statuses pair a fill with an icon and a word.
 
@@ -154,50 +164,60 @@ verdicts, header states and project statuses pair a fill with an icon and a word
 
 - **Header** (`Header` server component + `HeaderNav` client component): sticky at the top
   (`z-index: 40`), paper bar with a 3 px bottom rule; `html` has `scroll-padding-top: 5.5rem` so
-  anchors land below it. Monogram: 44 px ink square with paper letters, links to `#conteudo`.
+  anchors land below it. Monogram: 44 px surface square (white in light, graphite in dark) with `--fg` letters and outline, links to `#conteudo`.
   Primary action: "Baixar currículo" when `public/curriculo-augusto-bernardo.pdf` exists at build
   time (`src/lib/resume.ts`), otherwise "E-mail"; it is the only yellow element in the bar.
   - From 1024 px: one 72 px row (monogram, centred nav, theme toggle, primary action). Below: a 64 px
     row (monogram, theme toggle, primary action from 640 px, hamburger).
   - Active section: an `IntersectionObserver` on the five sections (a line at 40 % of the viewport)
-    marks the link with `aria-current="true"` and a blue pill; none in the hero, "Contato" at the
-    page bottom. The change is instant.
+    marks the link with `aria-current="true"`; one shared blue pill slides to it (`--dur-base`,
+    `--ease-out`; instant with reduced motion). None in the hero, "Contato" at the page bottom.
+    On hover an inactive link shows the same 2 px outline as the pill, without the blue fill.
   - Hide on scroll (only without reduced motion): hides after scrolling down more than 8 px past
     72 px, returns on scrolling up more than 8 px, and always shows while the menu is open or focus
     is inside it.
-  - Mobile menu: a 44 px hamburger (`aria-expanded`, `aria-controls="menu-principal"`, name
-    "Menu") turns into an X and opens a sheet under the bar over a scrim: five 56 px links with an
-    arrow (the active one blue) and, below 640 px, the primary action at full width. While open,
-    `#conteudo` and `#rodape` are `inert`, Tab wraps between the button and the sheet, page scroll is
-    locked (`html[data-menu="open"]`), Esc or a click on the scrim closes and returns focus to the
-    button, choosing a link closes it, and widening past 1024 px closes it. The hamburger renders
-    after hydration in a reserved slot; without JavaScript a `<noscript>` row of links replaces it.
+  - Mobile menu: a native `<details>`/`<summary>` (`.menu`, 44 px hamburger, name "Menu"; the
+    browser exposes expanded/collapsed) rendered on the server, so it opens without JavaScript and
+    nothing shifts at hydration. The hamburger turns into an X and opens a sheet under the bar over
+    a scrim: five 56 px links with an arrow (the active one blue) and, below 640 px, the primary
+    action at full width. Page scroll lock is CSS (`html:has(.menu[open])` below 1024 px). With
+    JavaScript: `#conteudo` and `#rodape` are `inert`, Tab wraps between the toggle and the sheet,
+    Esc or a click on the scrim closes and returns focus to the toggle, choosing a link closes it,
+    and widening past 1024 px closes it. Without JavaScript the links navigate but the sheet stays
+    open until the toggle is pressed.
 - **Buttons (`.nb-btn`)**: at rest, a 3 px outline and a 4 px shadow. On hover (pointer devices
   only) they rise 2 px and the shadow grows to 6 px. On press they move 4 px into their shadow,
   which drops to 0. Disabled (`aria-disabled`): dashed outline, no shadow, no movement.
-- **Hero**: a bento grid. The name card (blue role sticker, `h1`, specialty chips split from
-  `profile.specialty`, tagline, actions) spans 8 columns and two rows. The **live sticker**
-  (`SecurityStamp`) and the facts card sit in the 4 columns on the right. The blue About band spans
-  the full width. From 768 to 1023 px the sticker and facts sit side by side under the name card;
-  on phones everything stacks.
+- **Hero**: a bento grid. The name card (`h1` in three authored lines, the role as a title-size
+  line under it, specialty chips split from `profile.specialty`, tagline, actions) spans 8 columns.
+  The **live sticker** (`SecurityStamp`) sits in the 4 columns on the right, vertically centred on
+  the paper beside the card. The facts card spans the full width with the six facts in three
+  columns, then the blue About band. From 768 to 1023 px the sticker and facts sit side by side
+  under the name card; on phones everything stacks. Below 640 px the e-mail action is full width
+  and the other actions share the next row.
 - **Live sticker (`SecurityStamp`)**: rotated -2.5°, with a dashed inner perforation. Filled `--ok`
   when every header is present, `--warn` when some are missing, and surface while loading, offline,
-  without JavaScript or on a local build. A shield icon pairs with the state.
+  without JavaScript or on a local build. A shield icon pairs with the state. The label "Este site,
+  conferido agora" is Archivo, with right padding that clears the shield icon.
 - **Projects**: one card per published project. The blue title strip holds the `h3`, the status sticker and "Projeto corporativo" when it applies. The body puts the
   fragment (on `--tint`, as a stage) in 7 columns and the proof in 5, alternating sides per
-  card. The proof shows the result, the "Decisões técnicas" chip and a square-bullet list, the
+  card. The proof shows the result, the "Decisões técnicas" heading (`h4`, Archivo 800 at body size, semi-wide) and a square-bullet list, the
   technologies as chips, and "Código" and "Site no ar" as buttons.
 - **Experience**: the heading and the career arc (chips, the current step yellow, arrows pointing down
   when stacked) take 4 columns. Role cards take 8: role, company and a period chip in the head
   strip (yellow for the current role), then highlights and technology chips. Nothing collapses.
-- **Security**: an inverse band. The left column holds three fact stickers (blue, white, blue), the heading, the intro
-  and the "Conferir de novo" button. The right column holds the panel (`SecurityPanel`, `data-ui`),
-  a surface card with a blue hard shadow. Each header row shows its name, a state sticker (`ativo`
-  in ok, `ausente` in bad, `não conferido` in white), a value summary and an explanation. HSTS is
-  shown separately; the full CSP is behind `<details>`. DOM order is heading, intro, panel, button.
-- **Stack**: six cards on a 1/2/3-column grid, each with a blue header strip and technologies as
-  chips.
-- **Contact**: a blue band with a visible "Contato" heading, the lead, and the e-mail as a large
+  From 1024 px the career arc is sticky (`top: 6rem`) and follows the role cards.
+- **Security**: an inverse band. From 1024 px the left column (three fact stickers, blue, white,
+  blue; the heading; the intro) is sticky (`top: 6rem`) and the right column holds the panel
+  (`SecurityPanel`, `data-ui`), a surface card with a blue hard shadow, with the "Conferir de novo"
+  button under it. Each header row shows its name, a state sticker (`ativo` in ok, `ausente` in
+  bad, `não conferido` in white), a value summary and an explanation at body size; below 640 px the
+  state sticker sits under the name and names wrap only where they must. HSTS is shown separately;
+  the full CSP is behind `<details>`. DOM order is fact stickers, heading, intro, panel, button.
+- **Stack**: one outlined block with a 3 px rule between groups. Each row puts the group name
+  (`h3`, title size) in 3 columns and its technologies as chips in 9; below 1024 px the name sits
+  above the chips.
+- **Contact**: a blue band (a deep `--tint` band in dark) with a visible "Contato" heading, the lead, and the e-mail as a large
   yellow (primary) pressable card (broken after the `@` below 768 px), then the city and LinkedIn, GitHub (and
   Currículo) buttons.
 - **Footer**: an inverse band with the name at head size, the live seal (`SecuritySeal`: a square
@@ -217,8 +237,8 @@ outline.
   `localStorage.theme` is `dark`, otherwise `light`. The script stays a constant string; the CSP hash
   is computed from the exported HTML at image build.
 - Light is the default because the style depends on ink outlines and ink shadows on paper.
-- Dark mode keeps the system: warm near-black paper, cream outlines and cream hard shadows, the
-  same saturated fills with ink text, and a deep blue `--tint` that carries cream text.
+- Dark mode keeps the system: neutral graphite paper (no hue cast), light grey outlines and hard shadows, the
+  same saturated fills with ink text, and a deep blue `--tint` that carries light text.
 - Without JavaScript the page renders with the light tokens on `:root`.
 - Tailwind dark variant: `@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *))`.
 
@@ -247,7 +267,8 @@ Rules:
   elements at once; fades use `opacity`, never `visibility`, so links stay in the Tab order.
 - Every reveal clears its inline styles when it ends, so tilts (`rotate`) and button hover and press
   come back from their classes.
-- The `h1`, chips, tagline, actions, facts and About never animate, so the LCP is never delayed.
+- The `h1`, the role line, chips, tagline, actions, facts and About never animate, so the LCP is
+  never delayed.
 - Tilts are static `rotate` values, never part of a keyframe, so reduced motion keeps them.
 - No loops, no autoplay beyond one-shot entrances, no count-up numbers (counting from 0 would briefly
   claim "0 de 6 cabeçalhos ativos"), no 3D. The header, nav and theme toggle (used most) get no
@@ -264,7 +285,6 @@ accelerating into the impact (`--ease-in`), fades in during the first 20 %, squa
 | ----------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------- | ----------------------- | ------ |
 | Button hover (pointer only)                                       | Rise 2 px, shadow 4 → 6 px                              | 140 ms `--ease-out`                                             | Hover                   | CSS    |
 | Button press                                                      | Sink 4 px into the shadow, shadow → 0                   | 90 ms `--ease-out`                                              | Press                   | CSS    |
-| Hero role sticker (`.hero-slap`)                                  | Slap                                                    | 420 ms                                                          | Page load               | CSS    |
 | Live sticker while checking                                       | Lift 3 px, shadow 8 → 11 px                             | 140 ms `--ease-out`                                             | `data-state="loading"`  | CSS    |
 | Live sticker when the result lands                                | The new sticker slaps; shield icon pops from scale 0.6  | 420 ms; icon 240 ms after a 260 ms delay                        | Each real result        | CSS    |
 | Security panel rows when a result arrives                         | Fade, 0.25 rem slide, mark from scale 0.6               | 240 ms `--ease-out`, 30 ms stagger                              | Each real result        | CSS    |
@@ -301,7 +321,10 @@ engine), `@gsap/react` (`useGSAP` needs GSAP in the hydration bundle; `matchMedi
 - One `h1` (the name). Sections are labelled regions with an `h2`; project names, roles and stack
   groups use `h3`; "Decisões técnicas" uses `h4`.
 - Visible `:focus-visible` outline: 3 px solid `--focus`, offset 3 px; ink on fills, `--bg` on
-  inverse bands.
+  inverse bands. The offset puts the ring on the surface around the control, so `--focus` comes
+  from that context, never from the control's own fill: the yellow primary button and the open menu
+  button do not override it (an ink ring around them vanished on the dark page and on the light
+  inverse band).
 - Interactive targets are at least 44 × 44 px. Chips are not interactive.
 - External links say "(abre em nova aba)" and use `rel="noopener noreferrer"`.
 - The security panel announces its result through one `role="status"` line; the list is

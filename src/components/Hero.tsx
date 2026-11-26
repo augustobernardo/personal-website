@@ -38,16 +38,14 @@ export function Hero() {
   return (
     <div className="mx-auto w-full max-w-7xl px-[var(--margin)] pt-8 pb-16 lg:pt-12 lg:pb-24">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-12">
-        <div className="nb-card p-5 sm:p-8 md:col-span-2 lg:col-span-8 lg:row-span-2 lg:p-12">
-          <p className="hero-slap nb-sticker inline-block rotate-[-2deg] bg-pop-blue">
-            {profile.role}
-          </p>
-          <h1 id="hero-titulo" className="type-display mt-5">
+        <div className="nb-card p-5 sm:p-8 md:col-span-2 lg:col-span-8 lg:p-12">
+          <h1 id="hero-titulo" className="type-display">
             <span className="block">{words[0]}</span>
             <span className="block">{words[1]}</span>
             <span className="block">{words.slice(2).join(" ")}</span>
           </h1>
-          <ul className="mt-6 flex flex-wrap gap-2">
+          <p className="type-title mt-4 text-balance sm:mt-5">{profile.role}</p>
+          <ul className="mt-5 flex flex-wrap gap-2">
             {profile.specialty.split(" · ").map((item) => (
               <li key={item} className="nb-chip">
                 {item}
@@ -57,8 +55,8 @@ export function Hero() {
           <p className="mt-6 max-w-[34ch] text-[length:var(--step-lead)] font-medium">
             {profile.tagline}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href={`mailto:${profile.email}`} className={PRIMARY}>
+          <div className="mt-8 flex flex-wrap gap-3 [&>a:not(:first-child)]:flex-auto sm:[&>a:not(:first-child)]:flex-initial">
+            <a href={`mailto:${profile.email}`} className={`${PRIMARY} w-full sm:w-auto`}>
               <Mail aria-hidden="true" strokeWidth={2.5} className="size-4" />
               {site.links.email}
             </a>
@@ -78,15 +76,15 @@ export function Hero() {
         </div>
         <div
           data-parallax="hero"
-          className="flex items-start justify-center px-2 pt-2 md:justify-start lg:col-span-4 lg:col-start-9 lg:row-start-1"
+          className="flex items-start justify-center px-2 pt-2 md:justify-start lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:items-center lg:pt-0"
         >
           <SecurityStamp />
         </div>
-        <div className="nb-card p-5 sm:p-6 lg:col-span-4 lg:col-start-9 lg:row-start-2">
-          <dl className="divide-y-2 divide-line">
+        <div className="nb-card p-5 sm:p-6 lg:col-span-12">
+          <dl className="divide-y-2 divide-line lg:grid lg:grid-cols-3 lg:gap-x-8 lg:gap-y-5 lg:divide-y-0">
             {profile.facts.map(({ label, value }) => (
-              <div key={label} className="grid gap-1 py-3 first:pt-0 last:pb-0">
-                <dt className="font-mono text-[0.875rem] font-bold text-muted">{label}</dt>
+              <div key={label} className="grid gap-1 py-3 first:pt-0 last:pb-0 lg:py-0">
+                <dt className="text-[0.875rem] font-bold text-muted">{label}</dt>
                 <dd className="font-bold">{value}</dd>
               </div>
             ))}

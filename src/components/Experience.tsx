@@ -13,7 +13,7 @@ export function Experience() {
         className="mx-auto w-full max-w-7xl px-[var(--margin)] py-16 lg:grid lg:grid-cols-12 lg:gap-6 lg:py-24"
         titleClassName="in-word type-head lg:col-span-12"
       >
-        <p className="in-seq mt-6 flex flex-wrap items-center gap-2 lg:col-span-4 lg:col-start-1 lg:row-start-2 lg:flex-col lg:items-start lg:self-start">
+        <p className="in-seq mt-6 flex flex-wrap items-center gap-2 lg:col-span-4 lg:col-start-1 lg:row-start-2 lg:flex-col lg:items-start lg:self-start lg:sticky lg:top-24">
           <span className="sr-only">Trajetória: </span>
           {careerArc.map((step, i) => (
             <Fragment key={step}>

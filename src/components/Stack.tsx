@@ -11,25 +11,21 @@ export function Stack() {
         className="mx-auto w-full max-w-7xl px-[var(--margin)] py-16 lg:py-24"
         titleClassName="in-word type-head"
       >
-        <ul className="in-seq mt-10 grid gap-6 sm:grid-cols-2 lg:mt-14 lg:grid-cols-3 lg:gap-8">
+        <ul className="in-seq nb-card mt-10 divide-y-3 divide-line lg:mt-14">
           {stack.map((group, i) => (
             <li
               key={group.name}
-              className="nb-card overflow-hidden"
+              className="grid gap-3 p-5 sm:p-6 lg:grid-cols-12 lg:items-baseline lg:gap-6 lg:px-10"
               style={{ "--i": i } as CSSProperties}
             >
-              <div className="on-fill border-b-3 border-line px-5 py-3 bg-pop-blue">
-                <h3 className="type-title">{group.name}</h3>
-              </div>
-              <div className="p-5">
-                <ul className="flex flex-wrap gap-2">
-                  {group.items.map((item) => (
-                    <li key={item} className="nb-chip">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <h3 className="type-title lg:col-span-3">{group.name}</h3>
+              <ul className="flex flex-wrap gap-2 lg:col-span-9">
+                {group.items.map((item) => (
+                  <li key={item} className="nb-chip">
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </li>
           ))}
         </ul>
