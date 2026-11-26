@@ -54,7 +54,7 @@ jobs:
           persist-credentials: false
       - name: Scan history for secrets
         run: |
-          img=$(sed -n 's/^FROM //p' .github/tools/gitleaks/Dockerfile)
+          img=$(sed -n 's/^FROM //p' tools/ci/gitleaks/Dockerfile)
           docker run --rm -v "$PWD:/repo" "$img" \
             git --redact --verbose /repo
 
@@ -67,14 +67,14 @@ jobs:
           persist-credentials: false
       - name: actionlint
         run: |
-          img=$(sed -n 's/^FROM //p' .github/tools/actionlint/Dockerfile)
+          img=$(sed -n 's/^FROM //p' tools/ci/actionlint/Dockerfile)
           docker run --rm -v "$PWD:/repo" -w /repo "$img" -color
       - name: zizmor
         env:
           # Read-only token: enables the online audits (impostor commits, known-vulnerable actions).
           GH_TOKEN: ${{ github.token }}
         run: |
-          img=$(sed -n 's/^FROM //p' .github/tools/zizmor/Dockerfile)
+          img=$(sed -n 's/^FROM //p' tools/ci/zizmor/Dockerfile)
           docker run --rm -e GH_TOKEN -v "$PWD:/repo:ro" "$img" /repo/.github/workflows
 
   docker:
@@ -88,7 +88,7 @@ jobs:
         run: docker build -t personal-website:ci .
       - name: Scan the image (Trivy)
         run: |
-          img=$(sed -n 's/^FROM //p' .github/tools/trivy/Dockerfile)
+          img=$(sed -n 's/^FROM //p' tools/ci/trivy/Dockerfile)
           docker save personal-website:ci -o "$RUNNER_TEMP/image.tar"
           docker run --rm -v "$RUNNER_TEMP/image.tar:/in/image.tar:ro" "$img" \
             image --input /in/image.tar --severity CRITICAL --ignore-unfixed --exit-code 1 --no-progress

@@ -8,7 +8,7 @@ export const site = {
   ],
   header: {
     monogram: "AO",
-    home: "Augusto Oliveira, início",
+    home: "AO — Augusto Oliveira, início",
     sections: "Seções",
     menu: "Menu",
   },

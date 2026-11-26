@@ -10,6 +10,10 @@ updates:
     groups:
       npm-minor-patch:
         update-types: [minor, patch]
+    ignore:
+      # Types follow the runtime pinned in .nvmrc (Node 24); a major jump is a deliberate upgrade.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -18,9 +22,14 @@ updates:
       default-days: 7
     open-pull-requests-limit: 5
   - package-ecosystem: docker
-    directories: ["/", "/.github/tools/*"]
+    # Scanner images live outside .github/: Dependabot cannot open PRs that change files there.
+    directories: ["/", "/tools/ci/*"]
     schedule:
       interval: weekly
     cooldown:
       default-days: 7
     open-pull-requests-limit: 3
+    ignore:
+      # Build image follows .nvmrc (Node 24); a new major is a deliberate upgrade.
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"]

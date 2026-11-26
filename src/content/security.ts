@@ -1,16 +1,17 @@
 export const security = {
   stamp: { title: "Este site, conferido agora", link: "Ver a vistoria completa" },
-  facts: ["Site estático", "nginx sem root", "CSP por hash"],
+  facts: ["Site estático", "Cloudflare Workers", "CSP por hash"],
   title: "Segurança deste site",
   intro:
-    "Levo segurança para o dia a dia, e este site é o exemplo mais à mão: estático, servido por nginx em contêiner sem root, com CSP por hash. O painel lê os cabeçalhos que o servidor acabou de enviar para o seu navegador.",
+    "Levo segurança para o dia a dia, e este site é o exemplo mais à mão: estático, servido pela Cloudflare (Workers Static Assets), com CSP por hash. O painel lê os cabeçalhos que o servidor acabou de enviar para o seu navegador.",
   command: "curl -sI https://augustooliveira.dev.br",
   status: {
     static: "Cabeçalhos que este site envia em cada resposta.",
     loading: "Conferindo os cabeçalhos desta página…",
     active: (present: number, total: number) =>
       `${present} de ${total} cabeçalhos ativos nesta resposta`,
-    local: "Nenhum cabeçalho nesta resposta: esta é uma versão local, sem o nginx de produção.",
+    local:
+      "Nenhum cabeçalho nesta resposta: esta é uma versão local, sem os cabeçalhos de produção.",
     missing: "O servidor não enviou os cabeçalhos esperados.",
     error: "Não deu para conferir agora. Verifique a conexão e tente de novo.",
     source: (host: string, checkedAt: string) => `Lido de ${host} às ${checkedAt}`,
@@ -21,7 +22,7 @@ export const security = {
     loading: "Conferindo cabeçalhos de segurança…",
     active: (present: number, total: number) =>
       `${present} de ${total} cabeçalhos de segurança ativos`,
-    local: "Versão local, sem cabeçalhos do nginx",
+    local: "Versão local, sem cabeçalhos de produção",
     error: "Não deu para conferir os cabeçalhos",
   },
   button: { check: "Conferir de novo", loading: "Conferindo…" },
