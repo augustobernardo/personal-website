@@ -48,3 +48,6 @@ next-env.d.ts
 /graphify-out/
 
 /.wrangler/
+
+# Known weaknesses stay local: this repository is public.
+/.claude/referencias/
