@@ -13,7 +13,7 @@ RUN node scripts/csp-hashes.mjs out /tmp/csp.conf
 
 # Official nginx 1.30.7 (resolved 2026-11-19): fixes CRITICAL CVEs in 1.30.6 before the
 # unprivileged variant shipped. Made non-root here; config stays root-owned and read-only.
-FROM nginx:1.30.7-alpine@sha256:bef154735288bc38d99fac41ae63730684bcc661503673a04a0f9bc526ba8598
+FROM nginx:1.31.0-alpine@sha256:2f07d83bf561b506400dc183b1b2003803e39efbd22451f848adaba14d28c7c7
 RUN sed -i '/^user /d; s,^pid .*,pid /tmp/nginx.pid;,' /etc/nginx/nginx.conf \
  && sed -i '/^http {/a\    client_body_temp_path /tmp/client_temp;\n    proxy_temp_path /tmp/proxy_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;' /etc/nginx/nginx.conf \
  && chown -R 101:101 /var/cache/nginx
